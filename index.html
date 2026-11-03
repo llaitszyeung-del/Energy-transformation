@@ -18,16 +18,536 @@
 .animation-skip{margin-left:10px;margin-top:8px}
 
 .digest-stepper{display:flex;flex-wrap:wrap;gap:7px;padding:12px 15px;background:#fffdf5}.digest-stepper span{padding:7px 10px;border-radius:20px;font-size:12px;color:#65725e;background:#edf0e4}.digest-stepper .current{background:#285c42;color:white;font-weight:700}.digest-stepper .passed{background:#dce9ce;color:#285c42}
+
+/* A familiar classroom layout, with more room for observation. */
+:root{--paper:#f5f4e9;--line:#d5decc}
+[hidden]{display:none!important}
+.preview-strip{display:flex;justify-content:center;flex-wrap:wrap;gap:10px 24px;padding:9px 16px;background:#e8eedf;font-size:12px;color:#37543d;border-bottom:1px solid #d5dfca}
+.preview-strip a{font-weight:700;text-underline-offset:3px}
+.top{padding-top:15px;padding-bottom:15px}.lesson-progress{font-size:12px;font-weight:700;color:var(--green);white-space:nowrap}
+.shell{max-width:1580px;grid-template-columns:190px minmax(0,1fr) 235px;gap:26px}
+.card{padding:26px;border-radius:18px;margin:22px 0;box-shadow:0 3px 18px #173e3203}
+h1{line-height:1.38;font-size:clamp(28px,2.65vw,40px)}
+h1:focus{outline:none}.lead{font-size:16px;max-width:48em;line-height:1.9}
+h2{font-size:20px}.tiny{font-size:13px}.status{font-size:11px}
+button{transition:background-color .16s,box-shadow .16s;line-height:1.5}button:hover:not(:disabled){box-shadow:0 2px 7px #173e3220}button.secondary:hover:not(:disabled),button.ghost:hover:not(:disabled){background:#e2ead7}
+.choice[aria-pressed=true]::before{content:'✓ ';font-weight:800}
+.choice-list label{font-size:15px;padding:14px 16px;min-height:52px;transition:border-color .16s,background-color .16s}
+.choice-list label:hover:not(:has(input:disabled)){background:#f0f4e8;border-color:#92ad85}
+.choice-list label:has(input:focus-visible){outline:3px solid #b46526;outline-offset:3px}
+.answer-question{border:0;padding:0;margin:24px 0;min-width:0;scroll-margin-top:28px}
+.answer-question>legend{font-size:16px;line-height:1.8;margin-bottom:4px}
+.answer-question:focus{outline:none}.answer-question .choice-list{margin-top:4px}
+.question-error{background:#fff7e9;border-radius:12px;box-shadow:0 0 0 2px #c69b60;padding:14px!important}
+.field-error{color:#87551c;font-size:14px;margin:12px 0 0;line-height:1.8;font-weight:600}
+button.confirmed:disabled{background:#e4eddc;color:#285c42;opacity:1;cursor:default}
+.choice-list label:has(input:disabled){cursor:default}.choice-list input:disabled{opacity:1}
+.prediction-saved{padding:16px 22px;margin:18px 0;background:#edf2e6;display:flex;align-items:center;gap:20px}
+.prediction-saved h2{font-size:14px;margin:0;white-space:nowrap;color:var(--muted)}
+.saved-prediction{margin:0;font-size:14px}.saved-prediction p{margin:10px 0 0;color:var(--muted)}
+.grazing-scene{margin:18px 0 0;border-radius:14px 14px 0 0}.grazing-caption{font-size:15px;line-height:1.85;padding:16px 18px;min-height:62px}
+.animation-controls{background:#fffdf4;border:1px solid #d8dfc7;border-top:0;border-radius:0 0 14px 14px;margin:0 0 18px;padding:14px 16px 0;overflow:hidden}
+.player-buttons{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.player-buttons button{font-size:14px;min-height:44px;padding:10px 16px}
+.player-buttons [data-animate]{min-width:118px}.player-buttons .ghost{border-color:#d2ddc6;background:transparent}
+.player-status{font-size:12px;color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
+.player-progress{height:4px;background:#e6ecd9;margin:0 -16px}.player-progress>span{display:block;width:100%;height:100%;background:#7b9c54;transform-origin:left;will-change:transform}
+.diagram-note{margin:12px 0 16px;color:var(--muted);font-size:13px}.diagram-note p{margin:10px 0 0}
+.energy-card{padding:20px}.energy-big{font-size:38px}.energy-note{font-size:12px}.legend{font-size:13px}.legend-row small{font-size:11px}
+.timebox{line-height:2}.nav button{min-height:48px}.nav button:disabled{opacity:.65}
+.digest-stepper{padding:12px 15px;gap:8px}.digest-stepper span{font-size:13px}
+dialog{max-height:calc(100dvh - 40px);overflow-y:auto}dialog .actions{justify-content:flex-end}
+/* Keep breathing and heat moving throughout playback, not just two short pulses. */
+.metabolic-playing .co2-cloud{animation:co2-travel 2.1s 1s 3 both}
+.metabolic-playing .heat-waves{animation:heat-rise 1.8s 1.1s 4 both}
+.metabolic-playing .walking-zebra{animation:zebra-activity .85s ease-in-out infinite}
+.metabolic-playing .walking-zebra .walk-legs{animation:leg-stride .425s ease-in-out infinite alternate}
+.egestion-playing .egestion-zebra svg{animation:gentle-bob .7s ease-in-out infinite}
+.metabolic-playing .zebra-leg-rear,.hunt-playing .hunt-zebra .zebra-leg-rear{transform-origin:125px 140px;animation:leg-walk .75s ease-in-out infinite alternate}
+.metabolic-playing .zebra-leg-front,.hunt-playing .hunt-zebra .zebra-leg-front{transform-origin:125px 140px;animation:leg-walk .75s ease-in-out infinite alternate-reverse}
+.hunt-playing .hunt-zebra .zebra-leg-rear,.hunt-playing .hunt-zebra .zebra-leg-front{animation-duration:.24s}
+@keyframes gentle-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes leg-walk{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+@media(max-width:1320px){.shell{grid-template-columns:175px minmax(0,1fr);gap:24px}.rightrail{grid-column:2;position:static;display:grid;grid-template-columns:1.1fr 1fr;gap:22px}.legend{grid-template-columns:1fr 1fr}.note-card{margin-top:0}}
+@media(max-width:900px){.shell{display:block;padding:18px 22px 40px}.sidebar{position:static}.sidebar>.eyebrow,.timebox{display:none}.nav{display:flex;overflow-x:auto;padding:2px 0 14px;margin-bottom:12px;gap:8px;scrollbar-width:thin}.nav button{white-space:nowrap;font-size:13px;flex-shrink:0;padding:10px}.nav .num{width:23px;height:23px}.rightrail{display:grid;margin-top:28px}.top{padding:14px 22px}.top-actions .status{display:none}.card{padding:24px}.prediction-saved{padding:16px 20px}}
+@media(max-width:600px){.shell{padding:16px 14px 32px}.top{padding:12px 14px;align-items:center}.brand{font-size:14px;gap:8px}.brand-mark{width:30px;height:30px}.top-actions{gap:5px}.top-actions .small{font-size:12px;padding:8px;min-height:40px}.lesson-progress{display:none}.card{padding:18px;border-radius:14px;margin:18px 0}h1{font-size:29px}.lead{font-size:15px}.prediction-saved{display:block;padding:14px 18px}.prediction-saved h2{margin-bottom:8px}.choice-list label{font-size:14px;padding:13px 12px;gap:9px}.answer-question>legend{font-size:15px}.answer-question{margin:22px 0}.grazing-caption{padding:13px;font-size:14px;min-height:76px}.animation-controls{padding:12px 12px 0}.player-buttons{gap:8px}.player-buttons button{padding:9px 12px}.player-status{width:100%;margin:0}.player-progress{margin:0 -12px}.rightrail{display:block}.note-card{margin-top:18px}.digest-stepper{display:grid;grid-template-columns:1fr;padding:10px}.digest-stepper span{border-radius:8px;padding:7px 10px}.step-meta>span:last-child{font-size:11px}.scene-caption{padding:12px 8px}.preview-strip{font-size:11px;gap:5px 14px}.footer{font-size:12px}.keypoint-dialog{max-height:calc(100dvh - 24px)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* iPad: generous targets and native vertical scrolling; no continuous shadows. */
+@media(min-width:744px) and (max-width:1400px){.player-buttons button,.top-actions button,.choice{min-height:48px}.choice-list label{min-height:54px;font-size:16px}.choice-list input{width:21px;height:21px}.grazing-caption{font-size:16px}.player-buttons{gap:12px}.player-status{font-size:13px}.sidebar,.rightrail{position:static}.card{box-shadow:none}}
+@media(hover:none){button:hover:not(:disabled){box-shadow:none}.choice-list label:hover:not(:has(input:disabled)){background:transparent}.choice-list label:has(input:checked){background:#e9efdf!important}button,.choice-list label{touch-action:manipulation}}
+@media print{.preview-strip,.animation-controls,.lesson-progress{display:none!important}.prediction-saved{display:block}.grazing-scene{border-radius:12px}.choice-list label{break-inside:avoid}}
+.shell{grid-template-areas:"nav lesson energy"}.sidebar{grid-area:nav}.main{grid-area:lesson}.rightrail{grid-area:energy;display:block}
+.instant-feedback{font-size:14px;line-height:1.8;margin:10px 0;color:#87551c;padding:11px 14px;background:#fff2db;border-radius:9px}.instant-feedback.correct{color:#285c42;background:#e7f0df}.instant-wrong .choice-list label:has(input:checked){border-color:#b78430;background:#fff4df}.instant-correct .choice-list label:has(input:checked){border-color:#2d6950}
+.hunt-energy-summary{display:flex;align-items:center;justify-content:center;gap:26px;padding:20px;margin:20px 0;border-radius:14px;background:#edf2e5}.hunt-energy-summary>div{text-align:center}.hunt-energy-summary span,.hunt-energy-summary small{display:block}.hunt-energy-summary strong{display:block;font-size:60px;line-height:1.3;color:#2d6950}.hunt-energy-summary>span{font-size:30px;color:#81916d}.hunt-energy-summary>div:last-child strong{color:#ad741c}
+html[lang="en"]{font-family:Arial,Helvetica,system-ui,sans-serif}html[lang="en"] h1{font-size:clamp(27px,2.7vw,38px);line-height:1.3;letter-spacing:-.02em}html[lang="en"] p,html[lang="en"] .choice-list label{line-height:1.7}html[lang="en"] .brand{letter-spacing:0}html[lang="en"] .nav button{font-size:13px;line-height:1.5}html[lang="en"] .tracking-copy h2{font-size:20px;line-height:1.45}html[lang="en"] .energy-journey li{overflow-wrap:break-word;font-size:11px}html[lang="en"] .energy-model-note{font-size:12px}html[lang="en"] .step-meta{flex-wrap:wrap}html[lang="en"] .choice{min-width:135px}html[lang="en"] .digest-stepper span{line-height:1.5}html[lang="en"] .keypoint-dialog h2{font-size:25px;line-height:1.4}html[lang="en"] .top-actions{flex-shrink:0}#language-toggle{white-space:nowrap}
+@media(min-width:744px) and (max-width:900px){html[lang="en"] .top .brand{font-size:15px}html[lang="en"] .top .brand small{display:none}html[lang="en"] .top .lesson-progress{display:none}html[lang="en"] .top-actions{gap:7px}html[lang="en"] .keypoint-dialog p{font-size:17px}}
+.energy-tracker{display:grid;grid-template-columns:1fr;gap:16px}.energy-pie{text-align:center}.energy-pie svg{display:block;width:155px;max-width:100%;height:auto;margin:auto}.energy-pie>span{display:block;font-size:11px;color:#d1ddce;line-height:1.7;margin-top:5px}.tracking-copy h2{font-size:18px;margin:0 0 6px}.tracking-copy .eyebrow{line-height:1.8;letter-spacing:.03em;margin:0 0 8px}.tracking-number{display:flex;align-items:baseline;gap:8px}.tracking-number strong{font-size:56px;color:#f1c76a;line-height:1.15}.tracking-number>span{font-size:12px;color:#d1ddce}.tracking-message{font-size:14px;line-height:1.8;margin:10px 0}.pie-key{display:flex;flex-wrap:wrap;gap:7px 16px;font-size:11px;color:#d1ddce}.pie-key i{display:inline-block;width:9px;height:9px;background:#547565;margin-right:6px;border-radius:50%}.pie-key .gold{background:#f1c76a}.energy-journey{list-style:none;padding:16px 0 0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;border-top:1px solid #547565}.energy-journey li{position:relative;padding:5px;text-align:center;border-radius:8px;font-size:10px;line-height:1.6;color:#d1ddce}.energy-journey strong{display:block;font-size:21px;color:#fff}.energy-journey b{display:none}.energy-journey .pending{opacity:.65}.energy-journey .current{background:#355e48;box-shadow:inset 0 0 0 1px #f1c76a}.energy-journey .current strong{color:#f1c76a}.energy-explanation{margin:0;font-size:12px}.energy-explanation ul{padding-left:20px;line-height:1.9}.energy-explanation p{font-size:12px;margin:10px 0 0}.energy-model-note{font-size:11px;line-height:1.85;color:#d1ddce;margin:0}
+@media(min-width:744px) and (max-width:1320px){.shell{grid-template-areas:"nav energy" "nav lesson";align-items:start}.energy-tracker{grid-template-columns:145px 1fr;gap:12px 24px}.energy-pie{grid-row:1 / 3}.energy-journey,.energy-explanation,.energy-model-note{grid-column:1 / -1}.energy-journey{grid-template-columns:repeat(6,minmax(0,1fr))}.energy-journey li{font-size:11px}.energy-journey b{display:block;position:absolute;right:-10px;top:20px;color:#d1ddce}.tracking-number strong{font-size:58px}}
+@media(max-width:900px){.rightrail{margin:0 0 24px}.shell{display:block}.energy-tracker{grid-template-columns:130px 1fr;gap:14px}.energy-journey,.energy-explanation,.energy-model-note{grid-column:1 / -1}.energy-journey{grid-template-columns:repeat(6,minmax(0,1fr))}.energy-pie svg{width:130px}.tracking-number strong{font-size:48px}}
 </style></head>
-<body><a class="skip" href="#main-title">跳到活動內容</a><header class="top"><div class="brand"><span class="brand-mark" aria-hidden="true">↗</span><div>能量去了哪裡？<small>SAVANNA ENERGY EXPLORER</small></div></div><div class="top-actions"><span class="status" id="save-status">本機學習紀錄</span><button class="ghost small" id="teacher-toggle">教師導覽</button><button class="ghost small" id="reset">重設</button></div></header><div class="progress-line" aria-hidden="true"><span id="progress"></span></div><div class="teacher-banner hidden" id="teacher-banner" role="status">教師導覽／投影模式 · 所有關卡及參考答案已顯示 · 此模式並非登入權限控管</div>
-<div class="shell"><aside class="sidebar"><p class="eyebrow">25分鐘 · 自主探索</p><nav class="nav" id="nav" aria-label="學習步驟"></nav><div class="timebox"><strong>今天的探索節奏</strong><br>0–3　初次想法<br>3–4　操作說明<br>4–10　攝食與排遺<br>10–13　排尿與尿素<br>13–17　呼吸作用與熱<br>17–25　捕食觀察與討論</div></aside><main class="main"><div id="content"></div><footer class="footer"><span>草 → 斑馬 → 獅子<br>化學能的轉移與轉化</span><span>適用平板及電腦 · 可離線使用<br>進度只儲存於本機瀏覽器</span></footer></main><aside class="rightrail" id="energy" aria-label="累積能量總圖"></aside></div>
-<dialog id="teacher-dialog" aria-labelledby="teacher-title"><h2 id="teacher-title">切換教師導覽？</h2><p>將顯示所有關卡、完整能量圖及參考答案，適合備課或課末講解。學生自主探索時請使用學生模式。</p><p>這只是顯示模式，並非登入權限控管。導覽中的操作不會更改原有學生紀錄。</p><div class="actions"><button class="secondary" data-close>取消</button><button id="teacher-confirm">切換並顯示答案</button></div></dialog>
+<body><a class="skip" href="#main-title">跳到活動內容</a><header class="top"><div class="brand"><span class="brand-mark" aria-hidden="true">↗</span><div>能量去了哪裡？<small>SAVANNA ENERGY EXPLORER</small></div></div><div class="top-actions"><span class="lesson-progress" id="lesson-progress"></span><span class="status" id="save-status">本機學習紀錄</span><button class="ghost small" id="language-toggle" data-no-translate aria-label="Switch to English">English</button><button class="ghost small" id="reset">重設</button></div></header><div class="progress-line" aria-hidden="true"><span id="progress"></span></div>
+<div class="shell"><aside class="sidebar"><p class="eyebrow">25分鐘 · 自主探索</p><nav class="nav" id="nav" aria-label="學習步驟"></nav></aside><aside class="rightrail" id="energy" aria-label="能量逐步減少圖"></aside><main class="main"><div id="content"></div><footer class="footer"><span>草 → 斑馬 → 獅子<br>化學能的轉移與轉化</span><span>適用平板及電腦 · 可離線使用<br>進度只儲存於本機瀏覽器</span></footer></main></div>
+
 <dialog id="reset-dialog" aria-labelledby="reset-title"><h2 id="reset-title">清除這次本機進度？</h2><p>會清除這個瀏覽器內的所有預測、作答及學習進度。</p><div class="actions"><button class="secondary" data-close>取消，保留紀錄</button><button id="reset-confirm">確認清除並重新開始</button></div></dialog>
-<dialog id="keypoint-dialog" class="keypoint-dialog" aria-labelledby="keypoint-title"><span class="pill">✓ 答對了 · 學習重點</span><h2 id="keypoint-title">1　沒有被攝食的物質</h2><p>有些生物終生都能避過捕食者的捕獵。儲存在這些<strong>沒有被攝食</strong>的生物體內的<strong>化學能</strong>無法傳遞到更高的營養級，並從食物鏈中<strong>散失</strong>。</p><div class="keypoint-note">這裡的「散失」是指離開這條食物鏈，並非能量消失。這一輪未被斑馬吃下的草，化學能仍儲存在草的有機物中；日後仍可能被攝食。</div><div class="actions"><button data-close>明白了，繼續探索 →</button></div></dialog>
-<dialog id="feces-keypoint-dialog" class="keypoint-dialog" aria-labelledby="feces-keypoint-title"><span class="pill">✓ 答對了 · 學習重點</span><h2 id="feces-keypoint-title">2　未被消化及吸收的物質</h2><p>部分難以消化及吸收的物質，例如<strong>纖維素、毛髮、骨骼碎片</strong>等，會以<strong>糞便</strong>的形式排出體外。這部分能量不能沿這條食物鏈傳遞到<strong>下一個營養級</strong>。</p><div class="keypoint-note">這裡指未被消化吸收的部分。糞便仍含有機物及化學能，可進入分解者途徑；能量並沒有消失。</div><div class="actions"><button data-close>明白了，繼續探索 →</button></div></dialog>
+<dialog id="keypoint-dialog" class="keypoint-dialog" aria-labelledby="keypoint-title"><span class="pill">✓ 答對了 · 學習重點</span><h2 id="keypoint-title">1　沒有被攝食的物質</h2><p>有些生物終生都能避過捕食者的捕獵。這些生物若<strong>沒有被攝食</strong>，體內儲存的<strong>化學能</strong>便不能透過攝食，沿這條食物鏈傳遞給<strong>下一個營養級</strong>。</p><div class="keypoint-note">未沿這條食物鏈傳遞，不代表能量消失。這一輪未被斑馬吃下的草，化學能仍儲存在草的有機物中；日後仍可能被攝食。</div><div class="actions"><button data-close>明白了，繼續探索 →</button></div></dialog>
+<dialog id="feces-keypoint-dialog" class="keypoint-dialog" aria-labelledby="feces-keypoint-title"><span class="pill">✓ 答對了 · 學習重點</span><h2 id="feces-keypoint-title">2　未被消化及吸收的物質</h2><p>食物中未被消化吸收的部分，例如未被分解的<strong>纖維素、毛髮或骨骼碎片</strong>，會隨<strong>糞便</strong>排出體外。這部分能量不能沿這條食物鏈傳遞到<strong>下一個營養級</strong>。</p><div class="keypoint-note">這裡指未被消化吸收的部分。糞便仍含有機物及化學能，可進入分解者途徑；能量並沒有消失。</div><div class="actions"><button data-close>明白了，繼續探索 →</button></div></dialog>
 <dialog id="urine-keypoint-dialog" class="keypoint-dialog" aria-labelledby="urine-keypoint-title"><span class="pill">✓ 答對了 · 學習重點</span><h2 id="urine-keypoint-title">3　排泄物</h2><p>部分化學能會隨生物的<strong>排泄物</strong>（例如<strong>尿素</strong>等有機代謝廢物）離開身體。這部分能量不能沿這條食物鏈傳遞到<strong>更高營養級</strong>的生物。</p><div class="keypoint-note">二氧化碳也是呼吸作用產生的排泄物，但不是大量化學能的去向。尿液有機廢物仍含化學能；能量並沒有消失。</div><div class="actions"><button data-close>明白了，繼續探索 →</button></div></dialog>
-<dialog id="respiration-keypoint-dialog" class="keypoint-dialog" aria-labelledby="respiration-keypoint-title"><span class="pill">✓ 答對了 · 學習重點</span><h2 id="respiration-keypoint-title">4　呼吸作用產生的熱</h2><p>所有生物都進行<strong>呼吸作用</strong>。在這過程中，儲存在食物的大部分化學能會以<strong>熱</strong>的形式散失，小部分用來支持<strong>身體活動</strong>。</p><div class="keypoint-note">活動使用的能量最終亦會轉化為熱，不能與最終散熱重複計算。「散失」是指散到環境，並非能量消失；這裡沒有設定固定的百分比。</div><div class="actions"><button data-close>明白了，繼續探索 →</button></div></dialog>
-<noscript><p>本活動需要啟用JavaScript。下載離線HTML後，請用一般瀏覽器開啟。</p></noscript><script>const ART = {
+<dialog id="respiration-keypoint-dialog" class="keypoint-dialog" aria-labelledby="respiration-keypoint-title"><span class="pill">✓ 答對了 · 學習重點</span><h2 id="respiration-keypoint-title">4　呼吸作用產生的熱</h2><p>所有生物都進行<strong>呼吸作用</strong>。在這過程中，食物中的化學能被釋放；釋放的能量大部分以<strong>熱</strong>的形式散到環境，小部分用來支持<strong>身體活動</strong>。</p><div class="keypoint-note">活動使用的能量最終亦會轉化為熱，不能與最終散熱重複計算。「散失」是指散到環境，並非能量消失；這裡沒有設定固定的百分比。</div><div class="actions"><button data-close>明白了，繼續探索 →</button></div></dialog>
+<dialog id="hunt-summary-dialog" class="keypoint-dialog" aria-labelledby="hunt-summary-title"><span class="pill">✓ 全部答對了 · 食物鏈能量總結</span><h2 id="hunt-summary-title">最初100單位，最後只有8單位進入獅子體內</h2><div class="hunt-energy-summary" aria-label="草儲存100單位化學能，獅子攝入8單位化學能"><div><span>草原上的草</span><strong>100</strong><small>單位化學能</small></div><span aria-hidden="true">→</span><div><span>獅子攝入</span><strong>8</strong><small>單位化學能</small></div></div><p>在這個食物鏈示例中，草最初儲存了<strong>100單位化學能</strong>。經過攝食、消化吸收、排遺、排泄及散熱等過程，最後只有<strong>8單位化學能</strong>隨食物進入獅子體內。</p><div class="keypoint-note">沿食物鏈傳遞的能量逐步減少，但能量沒有消失。其餘能量有不同去向：有些仍儲存在未被吃下的有機物、糞便有機物或尿液有機廢物中；有些則已以熱的形式散到環境。<br>這是教學示例，並非固定比例；8單位是獅子的攝入量，並非最後儲存在獅子新組織中的能量。</div><div class="actions"><button data-close>明白了，完成探索 ✓</button></div></dialog>
+
+<noscript><p>本活動需要啟用JavaScript。下載離線HTML後，請用一般瀏覽器開啟。</p></noscript><script>(()=>{'use strict';
+const EN={
+  "能量去了哪裡？": "Where did the energy go?",
+  "能量去了哪裡？｜草原能量探究": "Where did the energy go? | Savanna Energy Explorer",
+  "優化預覽 · 不影響正式網站": "Preview · The published site is unchanged",
+  "查看原版 ↗": "Original version ↗",
+  "版本比較": "Compare versions",
+  "跳到活動內容": "Skip to the activity",
+  "本機學習紀錄": "Progress on this device",
+  "進度已儲存於本機": "Progress saved on this device",
+  "本次可用 · 關閉後可能無法保留進度": "Storage unavailable · Progress may not be saved",
+  "教師導覽": "Teacher view",
+  "返回學生模式": "Student view",
+  "重設": "Reset",
+  "25分鐘 · 自主探索": "25-minute investigation",
+  "學習步驟": "Learning steps",
+  "草原的疑問": "A savanna question",
+  "誰吃到了草？": "Which grass gets eaten?",
+  "吃下 ≠ 吸收": "Eaten ≠ absorbed",
+  "排泄：尿液與尿素": "Excretion: urine and urea",
+  "呼吸作用與熱": "Respiration and heat",
+  "獅子捕食觀察": "Watching the lion feed",
+  "起點": "Start",
+  "第一關": "Stage 1",
+  "第二關": "Stage 2",
+  "第三關": "Stage 3",
+  "第四關": "Stage 4",
+  "捕食觀察": "Predation",
+  "先猜想，再尋找證據": "Predict, then investigate",
+  "觀察攝食動畫": "Observe feeding",
+  "觀察消化與排遺": "Observe digestion and egestion",
+  "觀察後，與同伴交流": "Observe and explain",
+  "這片草的能量，": "The energy in this grass:",
+  "能全部到獅子身上嗎？": "can it all reach the lion?",
+  "沿著「草 → 斑馬 → 獅子」這條食物鏈，探索能量的去向。": "Follow energy along the food chain: grass → zebra → lion.",
+  "這片草儲存了100單位化學能。斑馬吃下草，再被獅子捕食。這100單位能量能否全部傳遞給獅子？": "This patch of grass stores 100 units of chemical energy. A zebra eats the grass and is then eaten by a lion. Can all 100 units reach the lion?",
+  "草": "Grass",
+  "這片草": "This patch of grass",
+  "斑馬": "Zebra",
+  "獅子": "Lion",
+  "草 → 斑馬 → 獅子": "Grass → zebra → lion",
+  "100 單位": "100 units",
+  "化學能的轉移與轉化": "Energy transfer and transformation",
+  "適用平板及電腦 · 可離線使用": "For tablets and computers · Works offline",
+  "進度只儲存於本機瀏覽器": "Progress is stored only in this browser",
+  "你的判斷": "Your answer",
+  "你的預測": "Your prediction",
+  "可以全部傳遞": "All of it can be transferred",
+  "不可以": "Not all of it",
+  "未肯定": "Not sure yet",
+  "我的理由": "My reason",
+  "（必選一項）": "(Choose one)",
+  "我認為能量會隨食物全部傳下去。": "I think all the energy is passed on in the food.",
+  "我認為不是所有能量都會進入下一種動物。": "I think only some of the energy reaches the next animal.",
+  "我還未確定，想先看動畫找證據。": "I am not sure yet. I want to look for evidence in the animations.",
+  "保存首次想法，開始探索 →": "Save my first idea and begin →",
+  "已保存的首次想法": "Your saved first idea",
+  "這份首次回答會保留到課末，讓你回看自己的想法。": "Your first answer is kept so you can revisit your initial thinking.",
+  "探索方法：先選預測與理由 → 觀看動畫 → 回答選擇題 → 即時查看回饋。": "How to explore: make a prediction → watch an animation → answer the questions → get immediate feedback.",
+  "本活動約25分鐘，沒有倒數限制。答案及進度只留在這個瀏覽器。": "Allow about 25 minutes. There is no time limit. Answers and progress stay in this browser.",
+  "← 上一步": "← Back",
+  "下一步 →": "Next →",
+  "01　先作預測": "01 · Make a prediction",
+  "我這樣想，因為…": "My reason is…",
+  "全部可以": "All of it",
+  "只有部分": "Only some of it",
+  "保存預測，解鎖觀察": "Save prediction and unlock the animation",
+  "先保存預測，便可播放動畫。": "Save your prediction to unlock the animation.",
+  "已記下，繼續用證據檢查。": "Saved. Now investigate your prediction.",
+  "這片草，": "Will the zebra",
+  "斑馬會全部吃下嗎？": "eat all this grass?",
+  "先預測，再看斑馬怎樣吃草。留意牠走過後，草原上還剩下甚麼。": "Predict first, then watch the zebra feed. Look at the grass left behind.",
+  "這一輪，草原上的草會全部被斑馬吃下嗎？": "Will the zebra eat all the grass during this feeding event?",
+  "我認為斑馬會把所有草吃光。": "I think the zebra will eat all the grass.",
+  "我認為有些草可能不會被吃下。": "I think some grass may be left uneaten.",
+  "我還未確定，想觀察斑馬吃草。": "I am not sure yet. I want to watch the zebra feed.",
+  "02　看動畫，找證據": "02 · Watch and look for evidence",
+  "03　觀察與解釋": "03 · Observe and explain",
+  "02　觀察與解釋": "02 · Observe and explain",
+  "斑馬走過後，草原上…": "After the zebra passes, the grassland…",
+  "所有草都被吃光了": "Has no grass left: it has all been eaten",
+  "仍有一部分草未被吃下": "Still has some uneaten grass",
+  "剩下的草突然消失了": "Has lost the remaining grass: it has vanished",
+  "未被吃下的草，其中的化學能現在在哪裡？": "Where is the chemical energy in the uneaten grass?",
+  "已經消失": "It has disappeared",
+  "仍儲存在草的有機物中，只是這一輪未被吃下": "It is still stored in the grass's organic matter; the grass was not eaten this time",
+  "觀看或跳過動畫後，再根據畫面及所學概念作答。": "Watch the animation, or skip to its final scene, then use the evidence and what you have learnt to answer.",
+  "沿用第一頁的這片草。草叢數量只作示意，不代表能量比例；吃下的草進入斑馬體內，沒有憑空消失。": "This is the same patch of grass as on the first page. The number of clumps does not represent an energy ratio. Eaten grass enters the zebra; it does not vanish.",
+  "未被吃下的草仍儲存化學能，只是這一輪未傳到斑馬，日後仍可能被攝食。能量總圖會替你記下這個去向。": "Uneaten grass still stores chemical energy. It has not passed to the zebra in this feeding event, but the grass could be eaten later. The energy chart records this pathway.",
+  "草原上有一片草。斑馬會把它們全部吃掉嗎？": "There is a patch of grass. Will the zebra eat it all?",
+  "斑馬一邊走，一邊吃草。留意牠走過後的草地。": "The zebra moves along and feeds. Watch the grass it leaves behind.",
+  "斑馬吃下了一部分草；仍有草留在原地，當中仍儲存化學能。": "The zebra has eaten some grass. The uneaten grass still stores chemical energy.",
+  "吃下的草 → 進入斑馬體內": "Eaten grass → enters the zebra",
+  "這些草還在": "Some grass remains",
+  "吃進去，": "Eaten food:",
+  "就全部吸收了嗎？": "is it all absorbed?",
+  "跟著食物進入消化道，觀察哪些物質穿過腸壁被吸收，哪些會隨糞便排出。": "Follow food through the gut. Watch what is absorbed through the gut wall and what is egested in faeces.",
+  "斑馬吃下食物後，食物中的物質會全部被吸收嗎？": "After the zebra eats, will all the material in its food be absorbed?",
+  "我認為吃進去的食物都會被吸收。": "I think all the food that is eaten will be absorbed.",
+  "我認為有些物質可能不會被消化吸收。": "I think some material may not be digested and absorbed.",
+  "我還未確定，想追蹤食物在消化道的去向。": "I am not sure yet. I want to follow food through the gut.",
+  "02A　草原觀察：斑馬排便": "02A · In the savanna: the zebra defaecates",
+  "先看斑馬做了甚麼，再留意牠走開後，草地上留下甚麼。": "Watch what the zebra does and what remains on the ground after it walks away.",
+  "斑馬走開了，糞便仍留在草地上。": "The zebra walks away; faeces remain.",
+  "糞便中的有機物 → 仍儲存化學能": "Organic matter in faeces still stores energy",
+  "觀察中：斑馬停下……糞便落到草地上……然後斑馬走開。": "Watch: the zebra stops, passes faeces onto the ground, then walks away.",
+  "糞便仍留在草地上。當中的有機物和化學能並沒有消失。": "Faeces remain on the ground. Their organic matter and chemical energy have not disappeared.",
+  "按播放，觀察斑馬排便及糞便的去向。": "Press play to watch the zebra defaecate and see where the faeces go.",
+  "接著往下看消化道動畫，找出糞便中的物質從哪裡來。排出未被消化吸收的物質稱為「排遺」。": "Next, watch the gut animation to find out where the material in faeces comes from. Removing undigested and unabsorbed food material is called egestion.",
+  "02B　食物進入、吸收與排出": "02B · Food enters, nutrients are absorbed, and residues leave",
+  "03　根據動畫，作出解釋": "03 · Use the animation to explain",
+  "哪些物質隨糞便排出？": "Which material is egested in faeces?",
+  "全部吃下的食物": "All the food that was eaten",
+  "未被消化吸收的物質，例如未被分解的纖維素": "Undigested and unabsorbed material, such as cellulose that has not been broken down",
+  "糞便完全沒有有機物": "Faeces contain no organic matter",
+  "糞便中有機物所儲存的化學能…": "The chemical energy in the organic matter in faeces…",
+  "消失了": "Has disappeared",
+  "已全部變成熱": "Has all been converted to heat",
+  "仍儲存在有機物中": "Is still stored in the organic matter",
+  "哪一項解釋正確？": "Which explanation is correct?",
+  "未被消化吸收的有機物會隨糞便排出體外，其中仍儲存化學能。": "Undigested and unabsorbed organic matter is egested in faeces and still stores chemical energy.",
+  "糞便溫暖，所以其中能量全部變成熱": "Faeces are warm, so all their energy has become heat",
+  "纖維素一定完全不能被分解嗎？": "Can any cellulose be broken down?",
+  "斑馬本身沒有分解纖維素的酶，但腸道微生物可幫助分解部分纖維素。未被分解的纖維素等物質，仍可隨糞便排出。": "Zebras do not produce enzymes that digest cellulose, but gut microbes help break down some cellulose. Material that is not broken down can still be egested in faeces.",
+  "科學參考：California Academy of Sciences": "Reference: California Academy of Sciences",
+  "看完動畫後，再結合動畫內容與所學概念作答。": "After watching, use the animation and what you have learnt to answer.",
+  "排遺：": "Egestion:",
+  "未被消化吸收的物質隨糞便排出。糞便包含未被分解的纖維素等有機物，仍儲存化學能；這些能量沒有消失。": "Undigested and unabsorbed material is egested in faeces. Organic matter, such as cellulose that has not been broken down, still stores chemical energy. This energy has not disappeared.",
+  "這是物質去向示意，不表示消化道的實際形狀。未被消化吸收的食物殘渣會成為糞便的一部分，再排出體外。": "This diagram shows pathways of material, not the gut's exact anatomy. Undigested and unabsorbed food residues become part of the faeces and are egested.",
+  "斑馬身體": "Zebra's body",
+  "消化道": "Gut",
+  "食物進入 →": "Food enters →",
+  "可吸收的小分子": "Absorbable small molecules",
+  "穿過腸壁 → 進入身體": "Through the gut wall → into the body",
+  "未消化吸收的部分": "Undigested, unabsorbed material",
+  "隨糞便排出體外": "Egested in faeces",
+  "物質去向示意": "Pathways of material (simplified)",
+  "食物進入消化道": "Food enters the gut",
+  "小分子被吸收": "Small molecules are absorbed",
+  "未吸收物隨糞便排出": "Unabsorbed residues are egested",
+  "跟著這一團草，觀察它在消化道內的去向。": "Follow this ball of chewed grass through the gut.",
+  "一團草進入消化道，沿著消化道前進。": "A ball of chewed grass enters the gut and moves along it.",
+  "可吸收的小分子穿過腸壁，進入斑馬身體。": "Absorbable small molecules cross the gut wall and enter the zebra's body.",
+  "未被消化吸收的部分，繼續沿消化道前進。": "Undigested and unabsorbed material continues along the gut.",
+  "未被消化吸收的物質隨糞便排出；其中仍有有機物及化學能。": "Undigested and unabsorbed material is egested in faeces. It still contains organic matter and chemical energy.",
+  "尿液排出時，": "When the zebra urinates,",
+  "帶走了甚麼？": "what leaves its body?",
+  "追蹤斑馬排出的尿液，看看當中是否有代謝廢物。": "Follow the urine leaving the zebra and look for metabolic waste.",
+  "斑馬吸收養分後，其中的化學能會全部儲存在新形成的身體組織中嗎？": "After nutrients are absorbed, will all their chemical energy be stored in new zebra tissue?",
+  "我認為吸收的能量都會變成新組織。": "I think all the absorbed energy will be stored in new tissue.",
+  "我認為斑馬維持生命及排出廢物也會涉及能量去向。": "I think maintaining life and removing waste also affect where energy goes.",
+  "我還未確定，想先看排尿與呼吸作用動畫。": "I am not sure yet. I want to watch the excretion and respiration animations.",
+  "02　排泄觀察：尿液與尿素": "02 · Excretion: urine and urea",
+  "看斑馬排尿，再看看尿液的放大示意圖中有甚麼。": "Watch the zebra urinate, then examine the enlarged diagram of its urine.",
+  "03　觀察尿液，解釋能量去向": "03 · Examine urine and explain the energy pathway",
+  "斑馬排尿時，甚麼隨尿液排出？": "What is excreted in the zebra's urine?",
+  "只有水，沒有任何有機廢物": "Only water, with no organic waste",
+  "尿素等代謝廢物": "Metabolic wastes such as urea",
+  "未被消化吸收的食物殘渣": "Undigested and unabsorbed food residues",
+  "尿素等有機代謝廢物中的化學能…": "The chemical energy in organic metabolic wastes such as urea…",
+  "隨尿液中的有機代謝廢物離開身體，未沿這條食物鏈傳給下一個營養級": "Leaves the body in urine and is not passed to the next trophic level along this food chain",
+  "憑空消失了": "Disappears without any other destination",
+  "觀看或跳過排尿與尿素動畫後，再用觀察作答。": "Watch or skip the urine and urea animation, then answer the questions.",
+  "尿素": "Urea",
+  "放大示意：尿素溶於尿液": "Enlarged diagram: urea dissolved in urine",
+  "代謝廢物(尿素)隨尿液排出體外": "Metabolic waste (urea) leaves in urine",
+  "尿素是有機代謝廢物，隨尿液排出；其中仍有化學能。": "Urea is an organic metabolic waste. It is excreted in urine and still contains chemical energy.",
+  "圖中的「尿素」標記用來代表溶於尿液的尿素，並非肉眼可見的形態。此處追蹤有機廢物的化學能，不是水本身的化學能。": "The labels represent urea dissolved in urine; they are not visible particles. We are tracking chemical energy in organic wastes, not in the water itself.",
+  "斑馬活動時，": "As the zebra moves,",
+  "觀察斑馬走動、呼出二氧化碳，以及熱散到環境的過程。": "Watch the zebra move, release carbon dioxide, and lose heat to its surroundings.",
+  "01　呼吸作用：二氧化碳與熱": "01 · Respiration: carbon dioxide and heat",
+  "觀察斑馬走動，再留意圖中二氧化碳與熱的去向，想想呼吸作用釋放的能量有何用途。": "Watch the zebra move and follow the carbon dioxide and heat in the diagram. Think about how the energy released by respiration is used.",
+  "02　解釋物質與能量的去向": "02 · Explain the pathways of matter and energy",
+  "二氧化碳與熱的去向，哪個正確？": "Which statement about carbon dioxide and heat is correct?",
+  "大量剩餘化學能儲存在二氧化碳中被呼出": "Large amounts of remaining chemical energy are exhaled in carbon dioxide",
+  "二氧化碳經肺呼出；熱由身體散到環境": "Carbon dioxide is exhaled through the lungs; heat is transferred from the body to the surroundings",
+  "二氧化碳就是熱，兩者相同": "Carbon dioxide and heat are the same thing",
+  "呼吸作用釋放的能量，怎樣被利用或轉化？": "How is the energy released by respiration used or transferred?",
+  "全部儲存為新增身體組織": "All of it is stored in new body tissue",
+  "部分用來支持身體活動，大部分以熱的形式散到環境；活動所用的能量最終也會轉化為熱": "Some supports movement and other activities; most is transferred as heat. Energy used in activity eventually becomes heat too",
+  "支持活動後就消失，沒有其他去向": "Energy disappears after being used in activity",
+  "觀看或跳過呼吸作用動畫後，再用觀察作答。": "Watch or skip the respiration animation, then answer the questions.",
+  "呼吸作用：葡萄糖＋氧氣→二氧化碳＋水＋能量": "Respiration: glucose + oxygen → carbon dioxide + water + energy",
+  "二氧化碳：物質去向": "Carbon dioxide: matter",
+  "由細胞產生，經血液運到肺後呼出": "Made in cells; carried to the lungs and exhaled",
+  "能量去向：活動與散熱": "Energy: activity and heat",
+  "部分釋放的能量支持身體活動": "Some released energy supports activity",
+  "大部分釋放的能量以熱散到環境": "Most released energy leaves as heat",
+  "走動、肌肉收縮，都需要能量": "Movement and muscle contraction need energy",
+  "呼吸作用釋放的能量，部分支持身體活動，大部分以熱散出；活動使用的能量最終也會轉化為熱。": "Some energy released by respiration supports activity; most is transferred as heat. Energy used in activity eventually becomes heat too.",
+  "二氧化碳是無色氣體，氣體標記與熱波紋均為示意。活動所用的能量最終也會轉化為熱，不能與最終散熱重複相加；圖示不表示固定比例。熱不只經呼氣散出。": "Carbon dioxide is colourless. The gas label and heat waves are symbols. Energy used in activity eventually becomes heat, so do not count it twice. No fixed ratio is implied, and heat is not lost only through breathing out.",
+  "留意動畫中物質和能量各自的去向……": "Follow the separate pathways of matter and energy…",
+  "捕獲了，": "Caught by a lion:",
+  "就把整隻斑馬吃下嗎？": "is the whole zebra eaten?",
+  "跟著獅子追捕、進食，再看看牠離開後，斑馬的哪些部分仍留在草原。": "Watch the lion hunt and feed. After it leaves, look at the parts of the zebra remaining on the ground.",
+  "01　草原上的一次捕食": "01 · A feeding event in the savanna",
+  "卡通捕食畫面，包含少量暗紅血跡。": "Cartoon predation scene with a small amount of dark red blood.",
+  "這是一次攝食情境示意，不表示固定攝食比例。獅子也可吃下部分骨頭；本次畫面展示的是留在現場、未被吃下的大骨等部分。": "This feeding event illustrates a possible outcome, not a fixed proportion. Lions can eat some bones; this scene shows large bones and other parts left uneaten.",
+  "1．獅子離開後，草地上留下了甚麼？": "1. What remains on the ground after the lion leaves?",
+  "甚麼也沒有，整隻斑馬都被吃下": "Nothing: the whole zebra has been eaten",
+  "本輪未吃下的大骨及少量身體組織": "Large bones and a little body tissue left uneaten",
+  "這些都是獅子排出的糞便": "Only faeces egested by the lion",
+  "2．沒有被吃下的部分，其中的化學能…": "2. The chemical energy in the uneaten parts…",
+  "全部消失了": "Has all disappeared",
+  "仍儲存在留下的有機物中，這一輪未傳遞給獅子": "Remains in their organic matter and has not passed to the lion in this feeding event",
+  "全部立即變成熱": "Has all immediately become heat",
+  "3．這次觀察支持哪個結論？": "3. Which conclusion does this observation support?",
+  "捕獲斑馬，就能取得牠身體中的全部化學能": "Catching a zebra gives the lion all the chemical energy in its body",
+  "只有被攝食部分的化學能，才有機會進入獅子體內": "Only chemical energy in the parts eaten can enter the lion",
+  "獅子進食也不會取得任何化學能": "The lion gains no chemical energy from eating",
+  "先觀看或跳過捕食動畫，再根據結尾畫面回答。": "Watch or skip the predation animation, then answer using its final scene.",
+  "獅子沒有吃下的部分，化學能仍有去向，並沒有消失。即使獵物被捕獲，也不代表牠的所有部分都會被吃下。": "Uneaten parts still contain chemical energy. Catching prey does not mean eating every part of it.",
+  "獅子吃下部分組織，仍留下本輪未吃下的大骨及少量組織。": "The lion eats some tissue, leaving large bones and a little tissue.",
+  "未被吃下的部分：有機物中仍儲存化學能": "Uneaten organic matter still stores chemical energy",
+  "捕獲獵物，不代表把整隻獵物全部吃下。留在草地上的部分仍有去向。": "Catching prey does not mean eating it all. The material left on the ground still has other pathways.",
+  "按播放，留意獅子進食後，草地上留下甚麼。": "Press play and watch what remains after the lion feeds.",
+  "觀察：獅子追捕斑馬 → 捕獲後進食 → 留下沒有吃下的部分。": "Watch: the lion hunts, feeds, and leaves some parts uneaten.",
+  "本次探索完成！這個示例由草原最初的100單位，減至只有8單位進入獅子體內。其餘能量仍有其他去向，並沒有消失。獅子攝入後，能儲存在新形成組織中的能量還會更少。": "Investigation complete! In this model, only 8 of the grass's original 100 energy units enter the lion. The rest follow other pathways; they have not disappeared. Even less energy will be stored in new lion tissue.",
+  "圖示說明": "About this diagram",
+  "動畫操作": "Animation controls",
+  "動畫播放進度": "Animation progress",
+  "▶ 播放動畫": "▶ Play animation",
+  "播放動畫": "Play animation",
+  "跳過動畫": "Skip animation",
+  "↻ 重播": "↻ Replay",
+  "重播動畫": "Replay animation",
+  "↻ 從頭播放": "↻ Restart",
+  "從頭播放動畫": "Restart animation",
+  "Ⅱ 暫停": "Ⅱ Pause",
+  "暫停動畫": "Pause animation",
+  "▶ 繼續播放": "▶ Resume",
+  "繼續播放動畫": "Resume animation",
+  "按播放，開始觀察": "Press play to begin",
+  "按播放，開始觀察。": "Press play to begin.",
+  "已看完 · 可重播": "Finished · Replay available",
+  "✓ 答對了。": "✓ Correct.",
+  "✗ 這個答案不正確。": "✗ Not quite.",
+  "再看看斑馬走過後的草地：是否還有草未被吃下？": "Look at the ground behind the zebra. Is any grass still uneaten?",
+  "未被吃下的草仍含有機物，其中的化學能並沒有消失。": "Uneaten grass still contains organic matter. Its chemical energy has not disappeared.",
+  "只有未被消化吸收的食物殘渣會成為糞便的一部分，並非所有食物。": "Undigested and unabsorbed residues become part of the faeces, not all the food that was eaten.",
+  "糞便中的有機物仍儲存化學能，並非消失或全部變成熱。": "Organic matter in faeces still stores chemical energy. It has not disappeared or all become heat.",
+  "未被消化吸收的有機物會隨糞便排出，其中仍儲存化學能；糞便溫暖不代表能量全部變成熱。": "Undigested and unabsorbed organic matter is egested and still stores chemical energy. Warm faeces do not mean all the energy has become heat.",
+  "尿素是代謝廢物，隨尿液排出；未被消化吸收的食物殘渣則隨糞便排出。": "Urea is metabolic waste excreted in urine. Undigested and unabsorbed food residues are egested in faeces.",
+  "尿素等有機代謝廢物仍含化學能，隨尿液離開身體。": "Organic metabolic wastes, such as urea, still contain chemical energy when they leave in urine.",
+  "二氧化碳是經肺呼出的物質；熱是散到環境的能量，兩者不同。": "Carbon dioxide is matter exhaled through the lungs. Heat is energy transferred to the surroundings. They are different.",
+  "呼吸作用釋放的能量，部分支持活動，大部分以熱散出；活動所用能量最終也轉化為熱。": "Some energy released by respiration supports activity; most leaves as heat. Energy used in activity eventually becomes heat too.",
+  "留意獅子離開後，現場還有未被吃下的大骨及少量組織。": "Look at what remains after the lion leaves: large bones and a little tissue have not been eaten.",
+  "留下的有機物仍儲存化學能；未被吃下不代表能量消失。": "The remaining organic matter still stores chemical energy. Uneaten does not mean the energy has vanished.",
+  "捕獲不等於全部吃下，只有被攝食部分的化學能才有機會進入獅子體內。": "Catching prey does not mean eating it all. Only energy in the parts eaten can enter the lion.",
+  "本頁題目已全部答對！回答已儲存，可以前往下一步。": "All answers on this page are correct! Your progress is saved. You can continue.",
+  "從草原到獅子 · 能量逐步減少": "From grass to lion · Less energy is passed on",
+  "能量逐步減少圖": "Energy transfer chart",
+  "草原上的草": "Grass in the savanna",
+  "斑馬吃下的草": "Grass eaten by the zebra",
+  "斑馬吸收的養分": "Nutrients absorbed by the zebra",
+  "排出尿素等廢物後": "After excretion of organic wastes",
+  "新形成的斑馬組織": "New zebra tissue",
+  "獅子攝入的部分": "Energy ingested by the lion",
+  "每個完整圓都代表最初的100單位": "Each full circle represents the original 100 units",
+  "／最初100單位": "/ original 100 units",
+  "這片草儲存的化學能，能全部傳給獅子嗎？": "Can all the chemical energy in this grass reach the lion?",
+  "最初100單位，這次只有8單位進入獅子體內。": "Only 8 of the original 100 units enter the lion in this example.",
+  "只有部分化學能繼續沿這條食物鏈傳遞。": "Only part of the chemical energy continues along this food chain.",
+  "目前追蹤的部分": "Energy still being tracked",
+  "已轉往其他去向": "Other energy pathways",
+  "已揭示的能量傳遞歷程": "Energy pathways revealed so far",
+  "繼續探索": "Keep exploring",
+  "減少的部分去了哪裡？": "Where did the rest go?",
+  "未被斑馬吃下的草": "Grass not eaten by the zebra",
+  "隨糞便排出的有機物": "Organic matter egested in faeces",
+  "隨尿液排出的有機代謝廢物": "Organic metabolic wastes excreted in urine",
+  "最終散出的熱": "Energy ultimately transferred as heat",
+  "本輪未被獅子吃下的斑馬組織": "Zebra tissue not eaten by the lion",
+  "完成各關後，這裡會逐步揭示其他去向。": "Complete each stage to reveal the other pathways.",
+  "灰綠色部分代表已有其他去向的能量，並非能量消失。加上目前追蹤的部分，總量仍是100單位。": "The grey-green sector represents other energy pathways, not energy that has vanished. Together with the energy being tracked, the total is still 100 units.",
+  "教學示例，並非固定比例。每個階段追蹤的對象不同，隨探索逐步揭示。": "An illustrative model, not a fixed transfer efficiency. Each stage follows energy in a different material or pathway.",
+  "教學示例，並非固定比例。這裡假設15單位的斑馬組織中，獅子吃下8單位，留下7單位；8單位是攝入量，並非最後儲存在獅子新組織中的能量。": "This model assumes the lion ingests 8 of the 15 units in new zebra tissue, leaving 7 uneaten. The 8 units represent intake, not energy ultimately stored in new lion tissue. These are illustrative values, not fixed proportions.",
+  "切換教師導覽？": "Switch to teacher view?",
+  "將顯示所有關卡、完整能量圖及參考答案，適合備課或課末講解。學生自主探索時請使用學生模式。": "Teacher view unlocks all stages and shows reference answers. Use it for lesson preparation or discussion; use student view for the investigation.",
+  "這只是顯示模式，並非登入權限控管。導覽中的操作不會更改原有學生紀錄。": "This is a display mode, not an access-control system. Teacher-view actions do not change the saved student record.",
+  "取消": "Cancel",
+  "切換並顯示答案": "Switch and show reference answers",
+  "教師導覽／投影模式 · 所有關卡及參考答案已顯示 · 此模式並非登入權限控管": "Teacher / presentation view · All stages and reference answers are available · This is not access control",
+  "教師參考答案 · 投影前請留意": "Teacher reference · Check before presenting",
+  "此模式可自由導覽，並非登入權限控管；切換回學生模式便會恢復原來的學生進度。": "You can explore freely in this display mode. Return to student view to restore the original student progress.",
+  "清除這次本機進度？": "Clear progress on this device?",
+  "會清除這個瀏覽器內的所有預測、作答及學習進度。": "This clears all predictions, answers and progress saved in this browser.",
+  "取消，保留紀錄": "Cancel and keep progress",
+  "確認清除並重新開始": "Clear progress and restart",
+  "✓ 答對了 · 學習重點": "✓ Correct · Key idea",
+  "1　沒有被攝食的物質": "1 · Uneaten material",
+  "有些生物終生都能避過捕食者的捕獵。這些生物若": "Some organisms avoid being eaten throughout their lives. If an organism is",
+  "沒有被攝食": "not eaten",
+  "，體內儲存的": ", the",
+  "化學能": "chemical energy",
+  "便不能透過攝食，沿這條食物鏈傳遞給": "stored in its body cannot pass through feeding along this food chain to the",
+  "下一個營養級": "next trophic level",
+  "未沿這條食物鏈傳遞，不代表能量消失。這一輪未被斑馬吃下的草，化學能仍儲存在草的有機物中；日後仍可能被攝食。": "Energy that does not pass along this food chain has not disappeared. Uneaten grass still stores chemical energy and may be eaten later.",
+  "明白了，繼續探索 →": "Got it — continue exploring →",
+  "2　未被消化及吸收的物質": "2 · Undigested and unabsorbed material",
+  "食物中未被消化吸收的部分，例如未被分解的": "Undigested and unabsorbed food material, such as unbroken-down",
+  "纖維素、毛髮或骨骼碎片": "cellulose, hair or bone fragments",
+  "，會隨": ", is egested as",
+  "糞便": "faeces",
+  "排出體外。這部分能量不能沿這條食物鏈傳遞到": ". This chemical energy cannot pass along this food chain to the",
+  "這裡指未被消化吸收的部分。糞便仍含有機物及化學能，可進入分解者途徑；能量並沒有消失。": "This refers to material that has not been digested and absorbed. Organic matter in faeces still contains chemical energy and can enter decomposer food chains.",
+  "3　排泄物": "3 · Excretory products",
+  "部分化學能會隨生物的": "Some chemical energy leaves an organism's body in",
+  "排泄物": "excretory products",
+  "（例如": "(such as",
+  "等有機代謝廢物）離開身體。這部分能量不能沿這條食物鏈傳遞到": "and other organic metabolic wastes). This energy cannot pass along this food chain to organisms at a",
+  "更高營養級": "higher trophic level",
+  "的生物。": ".",
+  "二氧化碳也是呼吸作用產生的排泄物，但不是大量化學能的去向。尿液有機廢物仍含化學能；能量並沒有消失。": "Carbon dioxide is also an excretory product of respiration, but it does not carry away large amounts of chemical energy. Organic wastes in urine still contain chemical energy.",
+  "4　呼吸作用產生的熱": "4 · Heat released through respiration",
+  "所有生物都進行": "All organisms carry out",
+  "呼吸作用": "respiration",
+  "。在這過程中，食物中的化學能被釋放；釋放的能量大部分以": ". Chemical energy in food is released during this process. Most of the released energy is transferred as",
+  "熱": "heat",
+  "的形式散到環境，小部分用來支持": "to the surroundings; a smaller part supports",
+  "身體活動": "body activities",
+  "活動使用的能量最終亦會轉化為熱，不能與最終散熱重複計算。「散失」是指散到環境，並非能量消失；這裡沒有設定固定的百分比。": "Energy used in activity eventually becomes heat too, so it must not be counted twice. Energy transferred to the surroundings has not disappeared. No fixed percentage is implied.",
+  "✓ 全部答對了 · 食物鏈能量總結": "✓ All correct · Food-chain energy summary",
+  "最初100單位，最後只有8單位進入獅子體內": "From 100 units in grass to just 8 units entering the lion",
+  "獅子攝入": "Lion's intake",
+  "單位化學能": "units of chemical energy",
+  "在這個食物鏈示例中，草最初儲存了": "In this food-chain model, the grass initially stores",
+  "100單位化學能": "100 units of chemical energy",
+  "。經過攝食、消化吸收、排遺、排泄及散熱等過程，最後只有": ". After feeding, digestion, absorption, egestion, excretion and heat transfer, only",
+  "8單位化學能": "8 units of chemical energy",
+  "隨食物進入獅子體內。": "enter the lion in its food.",
+  "沿食物鏈傳遞的能量逐步減少，但能量沒有消失。其餘能量有不同去向：有些仍儲存在未被吃下的有機物、糞便有機物或尿液有機廢物中；有些則已以熱的形式散到環境。": "Less energy is passed on at each stage, but energy does not disappear. Some remains in uneaten organic matter, faecal organic matter or organic wastes in urine; some has been transferred to the surroundings as heat.",
+  "這是教學示例，並非固定比例；8單位是獅子的攝入量，並非最後儲存在獅子新組織中的能量。": "These are illustrative values, not fixed proportions. The 8 units are the lion's intake, not the energy ultimately stored in new lion tissue.",
+  "明白了，完成探索 ✓": "Got it — investigation complete ✓",
+  "本活動需要啟用JavaScript。下載離線HTML後，請用一般瀏覽器開啟。": "This activity requires JavaScript. Open the downloaded offline HTML file in a web browser.",
+  "一叢綠草": "A clump of grass",
+  "一整片草，由許多叢草組成": "A patch made up of many clumps of grass",
+  "有黑白條紋的斑馬": "A black-and-white striped zebra",
+  "金黃色身體和棕色鬃毛的獅子": "A lion with a golden body and brown mane",
+  "陽光下的草原：一整片草、斑馬和獅子，箭嘴連成食物鏈": "A sunny savanna with a patch of grass, a zebra and a lion connected by food-chain arrows",
+  "斑馬連續走動並吃下部分草，仍有草留在原地": "A zebra moves along and eats some grass, leaving some uneaten",
+  "一團草沿消化道前進，可吸收的小分子穿過腸壁，未消化吸收的部分隨糞便排出": "A bolus of grass moves through the gut; small molecules are absorbed and residues are egested",
+  "卡通斑馬在草原停下排便，糞便落在草地上，斑馬走開後糞便仍留下": "A cartoon zebra stops and defaecates, then walks away, leaving faeces on the ground",
+  "斑馬排尿，放大示意尿素溶於尿液並隨尿液排出": "A zebra urinates; an enlarged diagram shows dissolved urea leaving in urine",
+  "斑馬身體細胞進行呼吸作用，二氧化碳經肺呼出，熱由身體散到環境": "Respiration in the zebra's cells produces carbon dioxide, which is exhaled, and releases energy, much of which leaves as heat",
+  "獅子追捕斑馬並進食，畫面有少量暗紅血跡；獅子離開後留下本輪未吃下的大骨及少量組織": "A lion hunts and feeds on a zebra; small dark red blood marks are shown. Large bones and a little tissue remain uneaten",
+  "草儲存100單位化學能，獅子攝入8單位化學能": "Grass stores 100 units of chemical energy; the lion ingests 8 units",
+  "初次預測沒有對錯。先保存學生的「可以全部傳遞／不可以／未肯定」及理由，稍後再比較。3–4分鐘可說明操作：先預測、再觀察、用證據確認。": "Do not grade initial predictions. Save each student's answer and reason for later comparison. Explain the sequence: predict, observe, then explain using evidence.",
+  "100 = 本輪未攝食的草20 + 被攝食80。未被吃下的草仍含化學能，只是這一輪未傳到斑馬，日後仍可能被攝食。": "100 = 20 in uneaten grass + 80 in eaten grass. Uneaten grass still stores chemical energy. It has not passed to the zebra in this feeding event, but the grass may be eaten later.",
+  "80 = 隨糞便排出的有機物20 + 被吸收60。糞便含未被消化吸收的有機物，屬排遺；其中的化學能沒有消失，也不是全部變成熱。": "80 = 20 in faecal organic matter + 60 absorbed. Removing undigested and unabsorbed food material is egestion. Its chemical energy has neither disappeared nor all become heat.",
+  "60 = 最終散出的熱40 + 尿液有機廢物5 + 新形成的斑馬組織15。呼吸作用釋放能量支持生命活動，最終以熱散到環境，不能把「活動40」和「熱40」重複計算。尿液有機物（例如尿素）屬代謝廢物，排出屬排泄；不是指水本身或二氧化碳帶走大量化學能。": "60 = 40 ultimately transferred as heat + 5 in organic wastes in urine + 15 in new zebra tissue. Energy used in activity ultimately becomes heat; do not count activity and heat as separate amounts. Removing metabolic wastes such as urea is excretion. This does not mean that water or carbon dioxide carries away large amounts of chemical energy.",
+  "呼吸作用：葡萄糖＋氧氣→二氧化碳＋水＋能量。部分釋放能量支持活動，大部分以熱散出；活動使用的能量最終亦成為熱。二氧化碳是物質產物，不是大量剩餘化學能的去向。": "Respiration: glucose + oxygen → carbon dioxide + water + energy. Some released energy supports activity and most is transferred as heat. Energy used in activity eventually becomes heat too. Carbon dioxide is a material product, not a store of large amounts of remaining chemical energy.",
+  "本輪獅子未吃下的大骨等部分仍含有機物化學能；不等同於糞便排遺。獅子可吃部分骨頭，故不能概括所有骨頭都不能被攝食。留下部分可再被攝食或進入分解者途徑。本頁加入假設教學示例：15單位斑馬組織中，獅子吃下8單位，留下7單位。8單位指攝入量，不是獅子新增組織的能量；獅子攝入後仍會有排遺、排泄及散熱等去向。": "Uneaten bones and tissue still contain organic matter and chemical energy; they are not faeces. Lions can eat some bones. The remains may be eaten later or enter decomposer food chains. In this illustrative model, the lion ingests 8 of the 15 units in new zebra tissue and leaves 7 uneaten. Intake is not the same as energy stored in new lion tissue: egestion, excretion and heat transfer still occur after intake.",
+  "先選一個判斷，再選最接近你想法的理由。這裡不判對錯。": "Choose an answer and the reason closest to your thinking. This prediction is not graded.",
+  "請先選擇預測及理由，才查看觀察。": "Choose a prediction and a reason before viewing the animation.",
+  "請先看完動畫，再根據觀察回答。": "Watch or skip the animation before answering.",
+  "請先看完排尿與尿素動畫。": "Watch or skip the urine and urea animation first.",
+  "請先看完呼吸作用動畫。": "Watch or skip the respiration animation first.",
+  "先看完捕食動畫，再根據觀察回答。": "Watch or skip the predation animation before answering.",
+  "教師導覽：參考答案已顯示；此操作不會更改學生完成紀錄。": "Teacher view: reference answers are shown. Student completion records are unchanged.",
+  "正在教師導覽；可閱讀頁底參考答案。返回學生模式後，原來的學習紀錄會保留。": "You are in teacher view. Reference answers appear below. Return to student view to restore the original progress.",
+  "✓ 答案已確認": "✓ Answers complete",
+  "請再留意這個問題。": "Take another look at this question.",
+  "再看看斑馬走過後的草原：遠處是否仍有草留在原地？": "Look at the ground behind the zebra. Is any grass still there?",
+  "留下的草還在，當中的化學能也仍有去向。這一輪未被吃下，不代表以後不能被攝食。": "The remaining grass still stores chemical energy. Grass left uneaten now may be eaten later.",
+  "再沿消化道追蹤食物：哪些物質沒有被吸收，最後會隨糞便排出？": "Follow food through the gut. Which material is not absorbed and is eventually egested in faeces?",
+  "糞便仍有未被消化吸收的有機物，當中的化學能仍然存在，並非全部變成熱。": "Faeces still contain undigested and unabsorbed organic matter. Its chemical energy has not all become heat.",
+  "請想想：未被消化吸收的有機物排出體外後，其中的化學能會消失嗎？": "Think about whether the chemical energy disappears when undigested and unabsorbed organic matter leaves the body.",
+  "再看尿液的放大示意圖：尿素是代謝廢物，會隨尿液排出，與食物殘渣的排遺不同。": "Look at the enlarged urine diagram. Urea is metabolic waste excreted in urine; this differs from egestion of food residues.",
+  "尿素等有機廢物仍含化學能，隨尿液排出，不是能量消失。": "Organic wastes such as urea still contain chemical energy when excreted in urine. The energy has not disappeared.",
+  "二氧化碳是經肺呼出的物質；熱是由身體散出的能量。": "Carbon dioxide is matter exhaled through the lungs; heat is energy transferred from the body.",
+  "部分能量支持活動，大部分以熱散出；活動所用能量最終亦成為熱，並不消失。": "Some energy supports activity and most leaves as heat. Energy used in activity eventually becomes heat too; it does not disappear.",
+  "再留意獅子離開後，草地上是否仍有大骨及少量組織。": "Look for large bones and a little tissue remaining after the lion leaves.",
+  "留下的有機物仍儲存化學能，未被吃下不代表能量消失或全部變成熱。": "Uneaten organic matter still stores chemical energy. It has not disappeared or all become heat.",
+  "捕獲不代表全部攝食。只有被吃下的部分才進入獅子體內。": "Catching prey does not mean eating it all. Only the parts eaten enter the lion."
+},LANG_KEY='savanna-language';
+let language='zh-Hant';try{if(localStorage.getItem(LANG_KEY)==='en')language='en'}catch{}
+function english(value){
+ const source=String(value),s=source.trim();let out=EN[s];
+ if(out===undefined){
+  let m;
+  if((m=s.match(/^已完成 (\d+) \/ (\d+)$/)))out=`Completed ${m[1]} / ${m[2]}`;
+  else if((m=s.match(/^(\d+[–−-]\d+) 分鐘$/)))out=m[1]+' min';
+  else if((m=s.match(/^(觀察中|已暫停) · (\d+) \/ (\d+) 秒$/)))out=`${m[1]==='觀察中'?'Watching':'Paused'} · ${m[2]} / ${m[3]} s`;
+  else if((m=s.match(/^✓ 首次預測已保存：(.*)$/)))out='✓ First prediction saved: '+english(m[1]);
+  else if((m=s.match(/^(.*) · 鎖定$/)))out=english(m[1])+' · Locked';
+  else if((m=s.match(/^最初100單位中，目前追蹤到(.+)的化學能為(\d+)單位$/)))out=`${m[2]} of the original 100 energy units: ${english(m[1])}`;
+  else if((m=s.match(/^(.+)：(\d+)單位$/)))out=english(m[1])+': '+m[2]+' units';
+  else if(s.startsWith('✗ 這個答案不正確。'))out='✗ Not quite. '+english(s.slice('✗ 這個答案不正確。'.length));
+  else if(s.startsWith('✓ '))out='✓ '+english(s.slice(2));
+  else out=s;
+ }
+ out=out.replace(/。/g,'.').replace(/，/g,', ').replace(/；/g,'; ').replace(/（/g,'(').replace(/）/g,')').replace(/？/g,'?');
+ return source.slice(0,source.indexOf(s))+out+source.slice(source.indexOf(s)+s.length);
+}
+const originals=new WeakMap(),attrs=new WeakMap(),sizes=new WeakMap();
+function fitSvg(el){
+ if(!el||el.tagName.toLowerCase()!=='text'||!el.ownerSVGElement)return;
+ if(!sizes.has(el))sizes.set(el,el.style.fontSize);
+ el.style.fontSize=sizes.get(el);
+ if(language!=='en')return;
+ const svg=el.ownerSVGElement,box=svg.viewBox.baseVal;
+ if(!box?.width)return;
+ const x=Number(el.getAttribute('x'))||0,middle=el.getAttribute('text-anchor')==='middle';
+ let available=middle?Math.min(x,box.width-x)*2-24:box.width-x-20;
+ if(el.closest('.cell-label'))available=570;
+ if(el.closest('.dung-callout')&&el.getAttribute('y')==='69')available=310;
+ if(el.closest('.hunt-label')&&el.getAttribute('y')==='58')available=680;
+ try{const measured=el.getComputedTextLength();if(measured>available&&available>0){const font=Number(el.getAttribute('font-size'))||20;el.style.fontSize=(font*available/measured).toFixed(2)+'px'}}catch{}
+}
+function translateNode(node){
+ const parent=node.parentElement;if(!parent||parent.closest('script,style,noscript,[data-no-translate]'))return;
+ const current=node.nodeValue;let record=originals.get(node);
+ if(!record||current!==record.last)record={source:current,last:current};
+ let next=language==='en'?english(record.source):record.source;
+ if(language==='en'&&next.trim()){
+  if(node.previousSibling?.nodeType===1&&/^[A-Za-z0-9(]/.test(next))next=' '+next;
+  if(node.nextSibling?.nodeType===1&&/[A-Za-z0-9]$/.test(next))next+=' ';
+ }
+ if(current!==next)node.nodeValue=next;
+ record.last=next;originals.set(node,record);fitSvg(parent);
+}
+function translateAttributes(el){
+ if(el.closest('script,style,[data-no-translate]'))return;
+ let saved=attrs.get(el);if(!saved){saved={};attrs.set(el,saved)}
+ for(const key of ['aria-label','title','placeholder','alt'])if(el.hasAttribute(key)){
+  const value=el.getAttribute(key);let record=saved[key];if(!record||value!==record.last)record={source:value,last:value};
+  const next=language==='en'?english(record.source):record.source;if(next!==value)el.setAttribute(key,next);record.last=next;saved[key]=record;
+ }
+}
+function walk(root){
+ if(root.nodeType===3){translateNode(root);return}
+ if(root.nodeType!==1||root.closest('script,style,[data-no-translate]'))return;
+ translateAttributes(root);
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT);let node;
+ while((node=walker.nextNode())){if(node.nodeType===3)translateNode(node);else translateAttributes(node)}
+}
+function apply(){
+ document.documentElement.lang=language;walk(document.body);
+ document.title=language==='en'?'Where did the energy go? | Savanna Energy Explorer':'能量去了哪裡？｜草原能量探究';
+ const button=document.getElementById('language-toggle');if(button){button.textContent=language==='en'?'繁體中文':'English';button.setAttribute('aria-label',language==='en'?'切換為繁體中文':'Switch to English')}
+}
+function setLanguage(value){language=value==='en'?'en':'zh-Hant';try{localStorage.setItem(LANG_KEY,language)}catch{}if(typeof document!=='undefined')apply()}
+globalThis.I18N={text:s=>language==='en'?english(s):s,english,setLanguage,getLanguage:()=>language};
+if(typeof document!=='undefined'){
+ document.getElementById('language-toggle')?.addEventListener('click',()=>setLanguage(language==='en'?'zh-Hant':'en'));
+ apply();
+ const observer=new MutationObserver(records=>{for(const r of records){if(r.type==='characterData')translateNode(r.target);else if(r.type==='attributes')translateAttributes(r.target);else r.addedNodes.forEach(walk)}});
+ observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','title','placeholder','alt']});
+}
+})();
+
+const ART = {
   grassPatch: "<defs><g id=\"scene-grass-tuft\"><ellipse cx=\"90\" cy=\"141\" rx=\"78\" ry=\"10\" fill=\"#536d47\" opacity=\".14\"/><path d=\"M84 142Q29 109 24 52Q61 80 84 142M87 142Q65 83 83 11Q105 64 92 141M94 141Q107 64 149 32Q145 94 99 142M76 141Q20 130 4 96Q53 100 83 143M100 141Q134 106 180 100Q161 139 101 145\" fill=\"#527a4c\"/><path d=\"M84 142Q53 93 46 75M90 142 85 38M97 141Q121 84 137 56M104 141 156 114\" fill=\"none\" stroke=\"#a8c36b\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M64 143Q50 91 55 57Q75 93 75 143M108 142Q114 103 137 79Q133 121 115 144\" fill=\"#729b53\"/></g></defs><g aria-label=\"一整片草，由許多叢草組成\"><ellipse cx=\"185\" cy=\"281\" rx=\"165\" ry=\"30\" fill=\"#8daa65\" opacity=\".25\"/><use href=\"#scene-grass-tuft\" transform=\"translate(32 191.15) scale(0.33)\" opacity=\"0.85\"/><use href=\"#scene-grass-tuft\" transform=\"translate(90 191.15) scale(0.33)\" opacity=\"0.85\"/><use href=\"#scene-grass-tuft\" transform=\"translate(148 191.15) scale(0.33)\" opacity=\"0.85\"/><use href=\"#scene-grass-tuft\" transform=\"translate(206 191.15) scale(0.33)\" opacity=\"0.85\"/><use href=\"#scene-grass-tuft\" transform=\"translate(264 191.15) scale(0.33)\" opacity=\"0.85\"/><use href=\"#scene-grass-tuft\" transform=\"translate(20 209.55) scale(0.41)\" opacity=\"1\"/><use href=\"#scene-grass-tuft\" transform=\"translate(86 209.55) scale(0.41)\" opacity=\"1\"/><use href=\"#scene-grass-tuft\" transform=\"translate(152 209.55) scale(0.41)\" opacity=\"1\"/><use href=\"#scene-grass-tuft\" transform=\"translate(218 209.55) scale(0.41)\" opacity=\"1\"/><use href=\"#scene-grass-tuft\" transform=\"translate(284 209.55) scale(0.41)\" opacity=\"1\"/><use href=\"#scene-grass-tuft\" transform=\"translate(40 232.95) scale(0.49)\" opacity=\"1\"/><use href=\"#scene-grass-tuft\" transform=\"translate(111 232.95) scale(0.49)\" opacity=\"1\"/><use href=\"#scene-grass-tuft\" transform=\"translate(182 232.95) scale(0.49)\" opacity=\"1\"/><use href=\"#scene-grass-tuft\" transform=\"translate(253 232.95) scale(0.49)\" opacity=\"1\"/></g>",
   scene: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" role="img" aria-label="陽光下的草原：一整片草、斑馬和獅子，箭嘴連成食物鏈" style="width:100%;height:auto;display:block">
   <defs>
@@ -91,40 +611,27 @@
   <g fill="#446d43" opacity=".7"><path d="m335 303-8-20 13 15 2-26 7 30m390 23-6-19 11 13 3-25 7 29m360 18-7-20 12 15 2-28 8 30"/></g>
   </svg>`,
   grass: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 210" role="img" aria-label="一叢綠草" style="width:100%;height:auto;display:block"><ellipse cx="130" cy="181" rx="102" ry="13" fill="#315a3d" opacity=".1"/><path d="M126 178Q59 137 51 67Q96 101 126 178M129 178Q101 102 122 15Q150 77 136 177M138 177Q153 82 205 43Q199 116 145 178M118 178Q50 164 28 122Q86 127 126 181M146 177Q185 136 238 127Q215 176 148 183" fill="#527a4c"/><path d="M126 178Q89 120 78 94M134 178 125 49M142 178Q171 111 190 74M151 178 210 145" fill="none" stroke="#b3ca79" stroke-width="4" stroke-linecap="round"/><path d="M104 180Q85 115 92 75Q116 120 117 180M155 178Q163 130 190 99Q185 153 165 182" fill="#7da356"/><path d="m64 177-9-22 15 17 2-33 9 38m120 2-6-17 10 12 2-24 7 29" fill="#7da356"/></svg>`,
-  zebra: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 210" role="img" aria-label="有黑白條紋的斑馬" style="width:100%;height:auto;display:block"><defs><clipPath id="art-zebra-clip"><ellipse cx="127" cy="115" rx="79" ry="46"/><path d="M170 106 184 43Q191 16 213 28L232 48Q242 57 233 71L210 83 207 124Z"/></clipPath></defs><ellipse cx="130" cy="187" rx="110" ry="10" fill="#315a3d" opacity=".1"/><path d="M57 104Q28 103 26 134l-4 18" stroke="#374437" stroke-width="5" fill="none" stroke-linecap="round"/><path d="m21 146-6 20 12-3 4-14" fill="#303a34"/><path d="m66 138-6 43h17l11-43m61 1 4 42h17l1-49" fill="#f7f4e7" stroke="#41463d" stroke-width="2"/><path d="m62 157 18 3m-19 8 17 3m76-14 18-3m-17 14 17-3" stroke="#303a34" stroke-width="5"/><path d="m58 178 21 1-2 7H56Zm95 0 20 1 1 7h-21" fill="#303a34"/><ellipse cx="127" cy="115" rx="79" ry="46" fill="#fffdf1" stroke="#374c3b" stroke-width="2.5"/><path d="M170 106 184 43Q191 16 213 28L232 48Q242 57 233 71L210 83 207 124Z" fill="#fffdf1" stroke="#374c3b" stroke-width="2.5"/><g clip-path="url(#art-zebra-clip)" stroke="#303a34" stroke-width="11" fill="none"><path d="M55 65q29 33 9 88M82 64q28 43 5 102M112 65q22 44 4 106M142 66q16 47 2 104M169 62q9 50 4 99M182 29l39 24m-42-4 40 23m-43-1 34 20m-38 2 35 18m-37 1 37 17"/></g><path d="M184 44q0-20 12-22l-12-4q-11 10-10 34l-6 35 10 2Z" fill="#303a34"/><path d="m200 28-6-19q1-8 7-1l10 20m7 7 3-22q3-7 6 0l2 28" fill="#fffdf1" stroke="#374c3b" stroke-width="2.5"/><path d="m201 23-4-12m26 20 2-14" stroke="#a7947c" stroke-width="3"/><path d="M221 52q12-2 18 7l-3 12-18 8-8-11Z" fill="#8d9384"/><circle cx="212" cy="48" r="3.5" fill="#203d2e"/><circle cx="213" cy="47" r="1" fill="#fff"/><ellipse cx="233" cy="63" rx="2" ry="3" fill="#263e30"/><path d="M221 72q5 2 10-2" stroke="#374c3b" stroke-width="1.5" fill="none"/><path d="m96 145-2 35h17l8-32m56-10 8 42h17l-2-53" fill="#fffdf1" stroke="#374c3b" stroke-width="2"/><path d="m95 158 20 3m-21 7 19 3m66-17 19-5m-16 15 18-5" stroke="#303a34" stroke-width="5"/><path d="m92 177 20 1-1 8H91Zm91 0 20 1 1 8h-20" fill="#303a34"/></svg>`,
+  zebra: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 210" role="img" aria-label="有黑白條紋的斑馬" style="width:100%;height:auto;display:block"><defs><clipPath id="art-zebra-clip"><ellipse cx="127" cy="115" rx="79" ry="46"/><path d="M170 106 184 43Q191 16 213 28L232 48Q242 57 233 71L210 83 207 124Z"/></clipPath></defs><ellipse cx="130" cy="187" rx="110" ry="10" fill="#315a3d" opacity=".1"/><path d="M57 104Q28 103 26 134l-4 18" stroke="#374437" stroke-width="5" fill="none" stroke-linecap="round"/><path d="m21 146-6 20 12-3 4-14" fill="#303a34"/><g class="zebra-leg-rear"><path d="m66 138-6 43h17l11-43m61 1 4 42h17l1-49" fill="#f7f4e7" stroke="#41463d" stroke-width="2"/><path d="m62 157 18 3m-19 8 17 3m76-14 18-3m-17 14 17-3" stroke="#303a34" stroke-width="5"/><path d="m58 178 21 1-2 7H56Zm95 0 20 1 1 7h-21" fill="#303a34"/></g><ellipse cx="127" cy="115" rx="79" ry="46" fill="#fffdf1" stroke="#374c3b" stroke-width="2.5"/><path d="M170 106 184 43Q191 16 213 28L232 48Q242 57 233 71L210 83 207 124Z" fill="#fffdf1" stroke="#374c3b" stroke-width="2.5"/><g clip-path="url(#art-zebra-clip)" stroke="#303a34" stroke-width="11" fill="none"><path d="M55 65q29 33 9 88M82 64q28 43 5 102M112 65q22 44 4 106M142 66q16 47 2 104M169 62q9 50 4 99M182 29l39 24m-42-4 40 23m-43-1 34 20m-38 2 35 18m-37 1 37 17"/></g><path d="M184 44q0-20 12-22l-12-4q-11 10-10 34l-6 35 10 2Z" fill="#303a34"/><path d="m200 28-6-19q1-8 7-1l10 20m7 7 3-22q3-7 6 0l2 28" fill="#fffdf1" stroke="#374c3b" stroke-width="2.5"/><path d="m201 23-4-12m26 20 2-14" stroke="#a7947c" stroke-width="3"/><path d="M221 52q12-2 18 7l-3 12-18 8-8-11Z" fill="#8d9384"/><circle cx="212" cy="48" r="3.5" fill="#203d2e"/><circle cx="213" cy="47" r="1" fill="#fff"/><ellipse cx="233" cy="63" rx="2" ry="3" fill="#263e30"/><path d="M221 72q5 2 10-2" stroke="#374c3b" stroke-width="1.5" fill="none"/><g class="zebra-leg-front"><path d="m96 145-2 35h17l8-32m56-10 8 42h17l-2-53" fill="#fffdf1" stroke="#374c3b" stroke-width="2"/><path d="m95 158 20 3m-21 7 19 3m66-17 19-5m-16 15 18-5" stroke="#303a34" stroke-width="5"/><path d="m92 177 20 1-1 8H91Zm91 0 20 1 1 8h-20" fill="#303a34"/></g></svg>`,
   lion: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 210" role="img" aria-label="金黃色身體和棕色鬃毛的獅子" style="width:100%;height:auto;display:block"><ellipse cx="138" cy="185" rx="116" ry="12" fill="#315a3d" opacity=".1"/><g transform="translate(0 22)"><path d="M65 104Q19 85 20 51Q21 29 39 35" fill="none" stroke="#cf9244" stroke-width="11" stroke-linecap="round"/><path d="M35 33q18-10 15 8-9 10-15 0Z" fill="#795135"/><path d="m72 115-10 39h26l14-42m43 0 5 42h25l-1-47" fill="#c88d42"/><path d="M54 105q1-43 53-48 47-4 78 30l4 45H87q-34-1-33-27Z" fill="#dda74f"/><path d="M88 84q37-18 69 2" stroke="#edc475" stroke-width="5" fill="none" stroke-linecap="round"/><path d="m91 120-3 36h27l7-39m58-5 9 44h27l-5-56" fill="#e5af58"/><path d="M84 151h31q5 8-2 10H86q-8-2-2-10Zm103 0h29q8 8-1 10h-27q-8-2-1-10Z" fill="#e9bc6a"/><path d="M167 31q18-22 38-9 27-4 37 18 24 10 17 34 9 24-12 39-5 23-29 23-21 15-40-3-26 0-29-25-20-18-10-40-5-24 28-37Z" fill="#9e6232"/><path d="M166 43q-11-22 8-22 12 1 16 17m35 1q2-23 17-17 15 8 1 25" fill="#dca04b" stroke="#87552e" stroke-width="4"/><path d="M163 60q6-29 35-26 35-1 42 28l-1 26q-8 31-38 31-31-1-39-32Z" fill="#e5b05b"/><path d="M176 60q7-4 13 0m25 0q7-4 13 0" stroke="#67472c" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="183" cy="68" r="3.5" fill="#2c3e2b"/><circle cx="219" cy="68" r="3.5" fill="#2c3e2b"/><path d="M176 84q9-12 25-3 16-9 25 3 3 17-14 20-9 8-21 0-18-4-15-20Z" fill="#f7d99b"/><path d="m193 81 17 0-8 9Z" fill="#65442b"/><path d="M202 89v6m0 0q-8 7-14 0m14 0q8 7 14 0" stroke="#67472c" stroke-width="2" fill="none" stroke-linecap="round"/><path d="m181 88-24-3m25 9-24 5m63-11 24-3m-25 9 24 5" stroke="#795135" stroke-width="1.5" opacity=".7"/></g></svg>`
 };
 
 (()=>{'use strict';
 const KEY='savanna-energy-hk-v1', VERSION=2;
 const fresh=()=>({version:VERSION,page:0,done:[],draft:{},predictions:{},observed:{},attempts:{},firstExit:null,exitLatest:null,createdAt:new Date().toISOString()});
-let state=fresh(),teacher=false,storageOK=true,feedback=null;
+let state=fresh(),storageOK=true,feedback=null,errorField=null;
 try{const v=JSON.parse(localStorage.getItem(KEY));if(v&&(v.version===1||v.version===VERSION)&&Array.isArray(v.done)&&v.draft&&v.predictions&&v.observed&&v.attempts)state={...fresh(),...v};}catch{storageOK=false}
 if(state.version===1){state.done=[...new Set(state.done.filter(i=>i<=4).flatMap(i=>i===3?[3,4]:i===4?[5]:[i]))];if(state.page===4)state.page=5;else if(state.page>4)state.page=5;state.version=VERSION;}
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const names=['草原的疑問','誰吃到了草？','吃下 ≠ 吸收','排泄：尿液與尿素','呼吸作用與熱','獅子捕食觀察'];
 const times=['0–3 分鐘','4–7 分鐘','7–10 分鐘','10–13 分鐘','13–17 分鐘','17–25 分鐘'];
-const refs=[
-'初次預測沒有對錯。先保存學生的「可以全部傳遞／不可以／未肯定」及理由，稍後再比較。3–4分鐘可說明操作：先預測、再觀察、調配、用證據確認。',
-'100 = 本輪未攝食的草20 + 被攝食80。未被吃下的草仍含化學能，只是這一輪未傳到斑馬，日後仍可能被攝食。',
-'80 = 隨糞便排出的有機物20 + 被吸收60。糞便含未消化吸收的有機物，屬排遺；其中的化學能沒有消失，也不是全部變成熱。',
-'60 = 最終散出的熱40 + 尿液有機廢物5 + 新增斑馬組織15。呼吸作用釋放能量支持生命活動，最終以熱散到環境，不能把「活動40」和「熱40」重複計算。尿液有機物（例如尿素）屬代謝廢物，排出屬排泄；不是指水本身或二氧化碳帶走大量化學能。',
-'85 = 草20 + 糞便20 + 尿液有機物5 + 熱40。可傳給獅子的新增斑馬組織為15，並非其餘85全變成熱。未攝食草可稍後被吃，糞便等可進入分解者途徑。',
-'假如獅子全吃下這15單位，最多攝入15。它仍有未消化吸收物、排泄的有機廢物及呼吸後散熱，所以少於15會成為新增獅子組織。沿指定食物鏈可傳遞的能量逐級減少；總能量沒有消失。',
-'80 − 20 − 5 − 45 = 10。至少解釋兩個去向：未消化吸收有機物隨糞便排出；代謝的有機廢物排出；呼吸作用釋放能量支持活動，最終以熱散出。毛蟲是昆蟲，排泄有機廢物可含尿酸；本題以「尿有機物」概括，不能套用哺乳類排尿圖像。',
-'讓學生對照初次及課末回答，標記保留或修正，指出令自己判斷改變或更有把握的證據。初次答案不可覆蓋。',
-'本頁只顯示目前瀏覽器的紀錄，沒有跨裝置班級監察。可下載文字、JSON，或列印另存PDF。數據是同一批植物有機物在某段期間的假設教學數據，不是固定15%或10%規律。'
-];
-refs[4]='本輪獅子未吃下的大骨等部分仍含有機物化學能；不等同於糞便排遺。獅子可吃部分骨頭，故不能概括所有骨頭都不能被攝食。留下部分可再被攝食或進入分解者途徑。本頁不設定獅子攝入能量數字，觀察後以問題及同伴討論作結。';
-refs.splice(5);refs.splice(4,0,'呼吸作用：葡萄糖＋氧氣→二氧化碳＋水＋能量。部分釋放能量支持活動，大部分以熱散出；活動使用的能量最終亦成為熱。二氧化碳是物質產物，不是大量剩餘化學能的去向。');
 state.done=state.done.filter(i=>Number.isInteger(i)&&i>=0&&i<names.length);
 if(!Number.isInteger(state.page)||state.page<0||state.page>=names.length)state.page=names.length-1;
-const save=()=>{try{const out=teacher?{...state,page:studentPage,draft:teacherDraft,observed:teacherObserved}:state;localStorage.setItem(KEY,JSON.stringify(out));}catch{storageOK=false}$('#save-status').textContent=storageOK?'進度已儲存於本機':'本次可用 · 儲存受限，請下載紀錄'};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch{storageOK=false}$('#save-status').textContent=storageOK?'進度已儲存於本機':'本次可用 · 關閉後可能無法保留進度'};
 const val=k=>state.draft[k]??'';
 const done=i=>state.done.includes(i);
-const unlocked=i=>teacher||i===0||done(i-1);
-function go(i){if(!Number.isInteger(i)||i<0||i>=names.length||!unlocked(i))return;state.page=i;feedback=null;save();render();window.scrollTo({top:0,behavior:'instant'});$('#main-title').focus({preventScroll:true});}
-function complete(i){if(teacher){feedback={ok:true,text:'教師導覽：參考答案已顯示；此操作不會更改學生完成紀錄。'};render();return}if(!done(i))state.done.push(i);save();feedback={ok:true,text:'已確認！這次的證據和回答已儲存。可以前往下一步。'};render()}
+const unlocked=i=>i===0||done(i-1);
+function go(i){if(!Number.isInteger(i)||i<0||i>=names.length||!unlocked(i))return;player.cancel();state.page=i;feedback=null;errorField=null;save();render();window.scrollTo({top:0,behavior:'auto'});$('#main-title').focus({preventScroll:true});}
+function complete(i){errorField=null;if(!done(i))state.done.push(i);save();feedback=i===names.length-1?null:{ok:true,text:'本頁題目已全部答對！回答已儲存，可以前往下一步。'};render()}
 const option=(key,value,label)=>`<button type="button" class="choice" data-choice="${key}" data-value="${value}" aria-pressed="${val(key)===value}">${label}</button>`;
 const choices=(key,items)=>`<div class="options" role="group" aria-label="${key.includes('pred')?'你的預測':'你的判斷'}">${items.map(([v,l])=>option(key,v,l)).join('')}</div>`;
 const checks=(key,items,type='checkbox')=>`<div class="choice-list">${items.map(([v,l])=>`<label><input type="${type}" name="${key}" data-field="${key}" value="${v}" ${type==='checkbox'?(Array.isArray(val(key))&&val(key).includes(v)?'checked':''):(val(key)===v?'checked':'')}> <span>${l}</span></label>`).join('')}</div>`;
@@ -136,95 +643,205 @@ predReason3:['我認為吸收的能量都會變成新組織。','我認為斑馬
 peerNote:['我留意到捕獲斑馬，不代表把整隻斑馬全部吃下。','我留意到留下的有機物仍儲存化學能。','我留意到未被吃下的部分，與吃下後排出的糞便不同。']
 };
 const text=(key,label,placeholder='',required=false)=>`<fieldset class="reason-question"><legend class="label">${label}${required?' <span class="tiny">（必選一項）</span>':''}</legend>${checks(key,(reasonOptions[key]||[]).map(t=>[t,t]),'radio')}</fieldset>`;
-const select=(key,label,opts)=>`<label class="label" for="${key}">${label}</label><select id="${key}" data-field="${key}"><option value="">請選擇…</option>${opts.map(([v,l])=>`<option value="${v}" ${val(key)===v?'selected':''}>${l}</option>`).join('')}</select>`;
-const navigation=i=>`<div class="actions">${i>0?`<button class="ghost" data-go="${i-1}">← 上一步</button>`:''}${i<names.length-1&&(done(i)||teacher)?`<button class="end" data-go="${i+1}">下一步 →</button>`:''}</div>${i===names.length-1&&done(i)?'<div class="feedback success" role="status">本次探索完成！只有部分化學能沿食物鏈傳遞；其餘能量仍有去向，並沒有憑空消失。你可以返回前面的關卡再看動畫。</div>':''}`;
-const feedbackHTML=()=>feedback?`<div class="feedback ${feedback.ok?'success':''}" role="status">${feedback.text}</div>`:'';
-function predict(i,q){const p=state.predictions[i];return `<div class="card"><h2>01　先作預測</h2><p>${q}</p>${p?`<div class="record"><strong>我的首次預測</strong><p>${esc(p.label)}</p><p class="tiny">${esc(p.reason||'已記下，繼續用證據檢查。')}</p></div>`:`${choices('pred'+i,[['all','全部可以'],['some','只有部分'],['unsure','未肯定']])}${text('predReason'+i,'我這樣想，因為…','簡短寫下想法，不需要先知道答案。',true)}<button data-action="predict" data-stage="${i}">保存預測，解鎖觀察</button>${feedbackHTML()}`}</div>`}
-const revealed=i=>teacher||!!state.predictions[i];
-const obs=(key,title,body)=>`<div class="observation"><button class="secondary" data-observe="${key}" aria-expanded="${!!state.observed[key]||teacher}">${state.observed[key]||teacher?'✓ 已查看：':'查看觀察：'}${title}</button>${state.observed[key]||teacher?`<p style="margin:12px 0 0">${body}</p>`:''}</div>`;
+const select=(key,label,opts)=>`<fieldset class="answer-question" id="question-${key}" tabindex="-1"><legend class="label">${label}</legend>${checks(key,opts,'radio')}</fieldset>`;
+
+const navigation=i=>`<div class="actions">${i>0?`<button class="ghost" data-go="${i-1}">← 上一步</button>`:''}${i<names.length-1&&(done(i))?`<button class="end" data-go="${i+1}">下一步 →</button>`:''}</div>${i===names.length-1&&done(i)?'<div class="feedback success" role="status">本次探索完成！這個示例由草原最初的100單位，減至只有8單位進入獅子體內。其餘能量仍有其他去向，並沒有消失。獅子攝入後，能儲存在新形成組織中的能量還會更少。</div>':''}`;
+const feedbackHTML=()=>feedback&&(!errorField||feedback.ok)?`<div class="feedback ${feedback.ok?'success':''}" role="status">${feedback.text}</div>`:'';
+function predict(i,q){const p=state.predictions[i];return `<div class="card ${p?'prediction-saved':''}"><h2>01　先作預測</h2>${p?'':`<p>${q}</p>`}${p?`<details class="saved-prediction"><summary>✓ 首次預測已保存：${esc(p.label)}</summary><p>${esc(p.reason||'已記下，繼續用證據檢查。')}</p></details>`:`${choices('pred'+i,[['all','全部可以'],['some','只有部分'],['unsure','未肯定']])}${text('predReason'+i,'我這樣想，因為…','簡短寫下想法，不需要先知道答案。',true)}<button data-action="predict" data-stage="${i}">保存預測，解鎖觀察</button>${feedbackHTML()}`}</div>`}
+const revealed=i=>!!state.predictions[i];
+const obs=(key,title,body)=>`<div class="observation"><button class="secondary" data-observe="${key}" aria-expanded="${!!state.observed[key]}">${state.observed[key]?'✓ 已查看：':'查看觀察：'}${title}</button>${state.observed[key]?`<p style="margin:12px 0 0">${body}</p>`:''}</div>`;
 function allocate(prefix,total,items){return `<div class="allocation" data-allocation="${prefix}" data-total="${total}">${items.map(([k,l])=>`<div class="alloc-row"><div class="alloc-head"><label for="${k}">${l}</label><span><input type="number" id="${k}" min="0" max="${total}" step="1" inputmode="numeric" data-field="${k}" data-alloc="${prefix}" value="${esc(val(k))}" aria-label="${l}的能量單位"> 單位</span></div><input type="range" min="0" max="${total}" step="1" value="${Number(val(k))||0}" data-range="${k}" aria-label="調整${l}"><div class="allocbar" aria-hidden="true"><span data-bar="${k}" style="width:${(Number(val(k))||0)/total*100}%"></span></div></div>`).join('')}<div class="total" id="total-${prefix}"></div></div>`}
 const stageHeader=(n,label)=>`<div class="step-meta"><span class="pill">${n}</span><span>${times[state.page]}</span><span class="line"></span><span>${label}</span></div>`;
-function intro(){return `${stageHeader('起點','先猜想，再尋找證據')}<h1 id="main-title" tabindex="-1">同一批草的能量，<br>能全部到獅子身上嗎？</h1><p class="lead">沿著一條食物鏈，追蹤每一單位能量的去向。</p><div class="scene">${ART.scene}<div class="scene-caption"><div>草<strong>100 單位</strong></div><span class="arrow">→</span><div>斑馬<strong>？</strong></div><span class="arrow">→</span><div>獅子<strong>？</strong></div></div></div><div class="card"><p><strong>這片草儲存了100單位化學能。草被斑馬進食後再被獅子捕食，最後這100單位能量能否全部傳遞到獅子？</strong></p>${state.predictions.intro?`<div class="record"><strong>已保存的首次想法</strong><p>${esc(state.predictions.intro.label)}</p><p>${esc(state.predictions.intro.reason)}</p></div><p class="tiny">這份首次回答會保留到課末，讓你回看自己的想法。</p>`:`${choices('introChoice',[['all','可以全部傳遞'],['some','不可以'],['unsure','未肯定']])}${text('introReason','我的理由','寫一句你現在的想法；不用擔心對錯。',true)}<button data-action="intro">保存首次想法，開始探索 →</button>`}${feedbackHTML()}</div><div class="tiny">探索方法：先選預測與理由 → 觀看動畫 → 回答選擇題 → 用證據確認。<br>本活動約25分鐘，沒有倒數限制。答案及進度只留在這個瀏覽器。</div>${navigation(0)}`}
+function intro(){return `${stageHeader('起點','先猜想，再尋找證據')}<h1 id="main-title" tabindex="-1">這片草的能量，<br>能全部到獅子身上嗎？</h1><p class="lead">沿著「草 → 斑馬 → 獅子」這條食物鏈，探索能量的去向。</p><div class="scene">${ART.scene}<div class="scene-caption"><div>草<strong>100 單位</strong></div><span class="arrow">→</span><div>斑馬<strong>？</strong></div><span class="arrow">→</span><div>獅子<strong>？</strong></div></div></div><div class="card"><p><strong>這片草儲存了100單位化學能。斑馬吃下草，再被獅子捕食。這100單位能量能否全部傳遞給獅子？</strong></p>${state.predictions.intro?`<div class="record"><strong>已保存的首次想法</strong><p>${esc(state.predictions.intro.label)}</p><p>${esc(state.predictions.intro.reason)}</p></div><p class="tiny">這份首次回答會保留到課末，讓你回看自己的想法。</p>`:`${choices('introChoice',[['all','可以全部傳遞'],['some','不可以'],['unsure','未肯定']])}${text('introReason','我的理由','寫一句你現在的想法；不用擔心對錯。',true)}<button data-action="intro">保存首次想法，開始探索 →</button>`}${feedbackHTML()}</div><div class="tiny">探索方法：先選預測與理由 → 觀看動畫 → 回答選擇題 → 即時查看回饋。<br>本活動約25分鐘，沒有倒數限制。答案及進度只留在這個瀏覽器。</div>${navigation(0)}`}
 let grazingFrame=-1,grazingRun=0;
-function grazingGrass(frame){
-const uses=[...ART.grassPatch.matchAll(/<use\b[^>]*\/>/g)];
-const order=uses.map((m,i)=>({i,x:Number(m[0].match(/translate\(([-\d.]+)/)[1])})).sort((a,b)=>a.x-b.x).map(v=>v.i);
-const consumed=new Set(order.slice(0,Math.floor(frame/8*11)));let i=0;
-const patch=ART.grassPatch.replace(/<use\b[^>]*\/>/g,use=>{const eaten=consumed.has(i++);if(!eaten)return use;const t=use.match(/transform="([^"]+)"/)[1];return '<g transform="'+t+'"><path d="M65 142v-10m25 10v-8m25 8v-10" fill="none" stroke="#71864b" stroke-width="4"/></g>'});
-return '<g class="shared-grazing-grass" transform="translate(110 -245) scale(1.8)">'+patch.replaceAll('scene-grass-tuft','grazing-grass-tuft')+'</g>';
+function grazingGrass(){
+ const uses=[...ART.grassPatch.matchAll(/<use\b[^>]*\/>/g)];
+ const order=uses.map((m,i)=>({i,x:Number(m[0].match(/translate\(([-\d.]+)/)[1])})).sort((a,b)=>a.x-b.x).map(v=>v.i);
+ let i=0;
+ const patch=ART.grassPatch.replace(/<use\b[^>]*\/>/g,use=>{const rank=order.indexOf(i++),t=use.match(/transform="([^"]+)"/)[1];return `<g data-tuft="${rank}">${use}</g><g data-stubble="${rank}" opacity="0" transform="${t}"><path d="M65 142v-10m25 10v-8m25 8v-10" fill="none" stroke="#71864b" stroke-width="4"/></g>`});
+ return '<g class="shared-grazing-grass" transform="translate(110 -245) scale(1.8)">'+patch.replaceAll('scene-grass-tuft','grazing-grass-tuft')+'</g>';
 }
-function grazingScene(){const finished=state.observed.g1Animation||done(1),frame=grazingFrame<0?(finished?8:0):grazingFrame;return `<div class="grazing-scene" aria-label="斑馬吃下部分草，遠處仍留下未被攝食的草"><svg viewBox="0 0 900 330" role="img" aria-label="動畫草原：斑馬攝食與留下的草"><rect width="900" height="330" fill="#f6edd6"/><circle cx="790" cy="58" r="27" fill="#efcd7c"/><path d="M0 210Q180 145 400 204T900 185V330H0Z" fill="#d8dfaf"/><path d="M0 259Q240 208 490 250T900 232V330H0Z" fill="#b7c78c"/>
-${grazingGrass(frame)}
-<g style="transform:translate(${Math.min(frame,7)*75+10}px,30px);transition:transform .8s ease"><g class="${grazingFrame>=0&&grazingFrame<8?'zebra-nibble':''}"><svg x="0" y="0" width="205" height="240">${ART.zebra}</svg></g></g>
-${frame>0?'<g><rect x="25" y="20" width="258" height="40" rx="20" fill="#fffdf3"/><text x="154" y="46" text-anchor="middle" fill="#285c42" font-size="18">吃下的草 → 進入斑馬體內</text></g>':''}${frame===8?'<g><path d="M690 174v28m-7-8 7 8 7-8" fill="none" stroke="#285c42" stroke-width="3"/><text x="690" y="156" text-anchor="middle" fill="#285c42" font-size="19" font-weight="bold">這些草還在！</text></g>':''}</svg><p class="grazing-caption" aria-live="polite">${grazingFrame>=0&&grazingFrame<8?'仔細看：斑馬一邊走，一邊低頭吃草……':finished?'斑馬吃下了一部分草，但遠處仍有草留在原地。':'草原上有一片草。斑馬會把它們全部吃掉嗎？'}</p></div>`}
-function stage1(){const watched=state.observed.g1Animation||teacher||done(1);return `${stageHeader('第一關','觀察攝食動畫')}<h1 id="main-title" tabindex="-1">草有能量，<br>斑馬便全部吃到嗎？</h1><p class="lead">先預測，再看斑馬怎樣吃草。留意牠走過後，草原上還剩下甚麼。</p>${predict(1,'這一輪，草原上的草會全部被斑馬吃下嗎？')}${revealed(1)?`<div class="card"><h2>02　看動畫，找證據</h2>${grazingScene()}<button class="secondary" data-graze ${grazingFrame>=0&&grazingFrame<8?'disabled':''}>${watched?'↻ 再看一次動畫':'▶ 播放攝食動畫'}</button>${skipControl('grazing')}<p class="tiny" style="margin-top:12px">沿用第一頁的這片草。草叢數量只作示意，不代表能量比例；吃下的草進入斑馬體內，沒有憑空消失。</p>${watched?`<h2 style="margin-top:24px">03　你觀察到了甚麼？</h2>${select('g1Observation','斑馬走過後，草原上…',[['all','所有草都被吃光了'],['some','仍有一部分草未被吃下'],['gone','剩下的草突然消失了']])}${select('g1Explain','留下的草所儲存的能量，現在在哪裡？',[['gone','已經消失'],['later','仍在草的有機物中，只是本輪未被吃下']])}<button data-action="check1">用觀察確認想法</button>`:'<p class="tiny">看完或跳過動畫後，再根據結尾畫面的證據回答。</p>'}${feedbackHTML()}</div>`:'<div class="card soft">先保存預測，便可播放動畫。</div>'}${done(1)?'<div class="feedback success">未被吃下的草仍儲存化學能，只是這一輪未傳到斑馬，日後仍可能被攝食。能量總圖會替你記下這個去向。</div>':''}${navigation(1)}`}
-function playGrazing(){if(grazingFrame>=0&&grazingFrame<8)return;const run=++grazingRun;grazingFrame=0;feedback=null;render();function tick(){if(run!==grazingRun)return;if(state.page!==1){grazingFrame=-1;return}grazingFrame++;if(grazingFrame===8){state.observed.g1Animation=true;state.observed.g1=true;save()}render();if(grazingFrame<8)setTimeout(tick,1050)}setTimeout(tick,1400)}
+function grazingScene(){return `<div class="grazing-scene smooth-grazing" data-scene="grazing"><svg viewBox="0 0 900 330" role="img" aria-label="斑馬連續走動並吃下部分草，仍有草留在原地"><rect width="900" height="330" fill="#f6edd6"/><circle cx="790" cy="58" r="27" fill="#efcd7c"/><path d="M0 210Q180 145 400 204T900 185V330H0Z" fill="#d8dfaf"/><path d="M0 259Q240 208 490 250T900 232V330H0Z" fill="#b7c78c"/>${grazingGrass()}<g data-grazer transform="translate(10 30)"><g data-nibble><svg width="205" height="240">${ART.zebra}</svg></g></g><g data-graze-eating opacity="0"><rect x="25" y="20" width="300" height="40" rx="20" fill="#fffdf3"/><text x="175" y="46" text-anchor="middle" fill="#285c42" font-size="18">吃下的草 → 進入斑馬體內</text></g><g data-graze-result opacity="0"><path d="M760 172v30m-7-8 7 8 7-8" fill="none" stroke="#285c42" stroke-width="3"/><text x="755" y="153" text-anchor="middle" fill="#285c42" font-size="20" font-weight="bold">這些草還在</text></g></svg><p class="grazing-caption" data-caption aria-live="polite">草原上有一片草。斑馬會把它們全部吃掉嗎？</p></div>`}
+
+function stage1(){const watched=state.observed.g1Animation||done(1);return `${stageHeader('第一關','觀察攝食動畫')}<h1 id="main-title" tabindex="-1">這片草，<br>斑馬會全部吃下嗎？</h1><p class="lead">先預測，再看斑馬怎樣吃草。留意牠走過後，草原上還剩下甚麼。</p>${predict(1,'這一輪，草原上的草會全部被斑馬吃下嗎？')}${revealed(1)?`<div class="card"><h2>02　看動畫，找證據</h2>${grazingScene()}${animationControls('grazing')}<details class="diagram-note"><summary>圖示說明</summary><p>沿用第一頁的這片草。草叢數量只作示意，不代表能量比例；吃下的草進入斑馬體內，沒有憑空消失。</p></details>${watched?`<h2 style="margin-top:24px">03　觀察與解釋</h2>${select('g1Observation','斑馬走過後，草原上…',[['all','所有草都被吃光了'],['some','仍有一部分草未被吃下'],['gone','剩下的草突然消失了']])}${select('g1Explain','未被吃下的草，其中的化學能現在在哪裡？',[['gone','已經消失'],['later','仍儲存在草的有機物中，只是這一輪未被吃下']])}`:'<p class="tiny">觀看或跳過動畫後，再根據畫面及所學概念作答。</p>'}${feedbackHTML()}</div>`:'<div class="card soft">先保存預測，便可播放動畫。</div>'}${done(1)?'<div class="feedback success">未被吃下的草仍儲存化學能，只是這一輪未傳到斑馬，日後仍可能被攝食。能量總圖會替你記下這個去向。</div>':''}${navigation(1)}`}
+function playGrazing(){player.start("grazing")}
 let digestionFrame=-1,digestionRun=0;
-function digestionScene(){const f=digestionFrame<0?((state.observed.g2Animation||done(2))?4:0):digestionFrame;
-const grassBall=(x,y,scale=1)=>`<g class="digestion-grass-ball" transform="translate(${x} ${y}) scale(${scale})"><path d="M-39 7Q-49-14-27-19Q-18-36 2-24Q24-35 33-15Q51-5 36 15Q21 31 3 22Q-22 34-35 17Z" fill="#587f43" stroke="#426b38" stroke-width="2"/><g stroke="#9db56c" stroke-width="4" stroke-linecap="round" fill="none"><path d="m-29-7 15 13m-2-22 9 21m10-22-4 20m17-16-9 17m17-7-13 12m-31 0 13 6m-20-5 7 10m11-7 8 7"/></g></g>`;
-const active=f<2?0:f===2?1:2;
-const captions=['食物從口部進入消化道。','食物沿消化道前進，部分成分被分解成可吸收的小分子。','有用、可吸收的小分子穿過腸壁，進入身體。','難以消化、未被吸收的部分繼續向消化道末端移動。','未消化吸收的物質隨糞便排出體外；其中仍有有機物和化學能。'];
-return `<div class="grazing-scene simple-digestion"><svg viewBox="0 0 1000 500" role="img" aria-label="食物進入消化道，可吸收的小分子進入身體，未消化吸收的物質隨糞便排出"><rect width="1000" height="500" fill="#f8edd8"/><svg x="10" y="95" width="190" height="143">${ART.zebra}</svg><rect x="270" y="45" width="320" height="365" rx="25" fill="#e3ecd5"/><text x="430" y="82" text-anchor="middle" font-size="24" font-weight="bold" fill="#285c42">斑馬身體</text><path d="M175 170H480Q535 170 535 215T480 260H355Q300 260 300 305T355 350H700" fill="none" stroke="#bd986f" stroke-width="88" stroke-linecap="round"/><path d="M175 170H480Q535 170 535 215T480 260H355Q300 260 300 305T355 350H700" fill="none" stroke="#f4dfb8" stroke-width="68" stroke-linecap="round"/><text x="428" y="308" text-anchor="middle" font-size="19" fill="#684e37">消化道</text><text x="170" y="108" text-anchor="middle" font-size="21" fill="#285c42">食物進入 →</text>
-${f<2?grassBall(f===0?190:390,170):''}
-${f>=2?'<path d="M420 149V107m-8 12 8-12 8 12" stroke="#c89531" stroke-width="5" fill="none"/><g fill="#e4b44c" stroke="#b38a31" stroke-width="2"><circle cx="395" cy="119" r="9"/><circle cx="449" cy="117" r="9"/><circle cx="424" cy="145" r="9"/></g><text x="637" y="121" font-size="22" fill="#285c42">可吸收的小分子</text><text x="637" y="151" font-size="20" fill="#285c42">穿過腸壁 → 進入身體</text>':''}
-${f>=2&&f<4?grassBall(f===2?420:655,f===2?260:350,.7):''}
-${f>=3?'<path d="M735 350q55 3 67 28m-11-7 11 7 3-14" stroke="#8e7951" stroke-width="4" fill="none"/><text x="780" y="450" text-anchor="middle" font-size="22" fill="#684e37">未消化吸收的部分</text><text x="780" y="480" text-anchor="middle" font-size="22" font-weight="bold" fill="#285c42">隨糞便排出體外</text>':''}
-${f===4?'<ellipse cx="809" cy="407" rx="51" ry="23" fill="#9b7651"/><path d="m782 404 18-6m7 12 16-5m2-11 11 7" stroke="#c0c18b" stroke-width="5" stroke-linecap="round"/>':''}
-<text x="175" y="465" text-anchor="middle" font-size="18" fill="#65725e">物質去向示意</text></svg><div class="digest-stepper">${['食物進入消化道','小分子被吸收','未吸收物隨糞便排出'].map((t,i)=>`<span class="${i===active?'current':i<active?'passed':''}">${t}</span>`).join('')}</div><p class="grazing-caption" aria-live="polite">${captions[f]}</p></div>`}
+function digestionScene(){return `<div class="grazing-scene simple-digestion" data-scene="digestion"><svg viewBox="0 0 1000 500" role="img" aria-label="一團草沿消化道前進，可吸收的小分子穿過腸壁，未消化吸收的部分隨糞便排出"><rect width="1000" height="500" fill="#f8edd8"/><svg x="10" y="95" width="190" height="143">${ART.zebra}</svg><rect x="270" y="45" width="320" height="365" rx="25" fill="#e3ecd5"/><text x="430" y="82" text-anchor="middle" font-size="24" font-weight="bold" fill="#285c42">斑馬身體</text><path data-digest-path d="M175 170H480Q535 170 535 215T480 260H355Q300 260 300 305T355 350H700" fill="none" stroke="#bd986f" stroke-width="88" stroke-linecap="round"/><path d="M175 170H480Q535 170 535 215T480 260H355Q300 260 300 305T355 350H700" fill="none" stroke="#f4dfb8" stroke-width="68" stroke-linecap="round"/><text x="428" y="308" text-anchor="middle" font-size="21" fill="#684e37">消化道</text><text x="170" y="108" text-anchor="middle" font-size="21" fill="#285c42">食物進入 →</text>
+<g data-bolus transform="translate(175 170)"><path d="M-39 7Q-49-14-27-19Q-18-36 2-24Q24-35 33-15Q51-5 36 15Q21 31 3 22Q-22 34-35 17Z" fill="#587f43" stroke="#426b38" stroke-width="2"/><g stroke="#b0c784" stroke-width="4" stroke-linecap="round" fill="none"><path d="m-29-7 15 13m-2-22 9 21m10-22-4 20m17-16-9 17m17-7-13 12m-31 0 13 6m-20-5 7 10m11-7 8 7m-28-32 5 6m-4 17 5-5m29-2 8 4"/></g></g>
+<g data-absorption opacity="0"><path d="M390 145V100m-8 12 8-12 8 12" stroke="#c89531" stroke-width="4" fill="none"/><text x="637" y="119" font-size="23" fill="#285c42">可吸收的小分子</text><text x="637" y="151" font-size="21" fill="#285c42">穿過腸壁 → 進入身體</text><g fill="#e4b44c" stroke="#b38a31" stroke-width="2"><circle data-molecule="0" r="9"/><circle data-molecule="1" r="9"/><circle data-molecule="2" r="9"/><circle data-molecule="3" r="9"/></g></g>
+<g data-egest-label opacity="0"><path d="M735 350q55 3 67 28m-11-7 11 7 3-14" stroke="#8e7951" stroke-width="4" fill="none"/><text x="780" y="451" text-anchor="middle" font-size="23" fill="#684e37">未消化吸收的部分</text><text x="780" y="481" text-anchor="middle" font-size="23" font-weight="bold" fill="#285c42">隨糞便排出體外</text></g><g data-feces opacity="0"><ellipse cx="809" cy="407" rx="51" ry="23" fill="#9b7651"/><path d="m782 404 18-6m7 12 16-5m2-11 11 7" stroke="#c0c18b" stroke-width="5" stroke-linecap="round"/></g><text x="175" y="465" text-anchor="middle" font-size="18" fill="#65725e">物質去向示意</text></svg><div class="digest-stepper">${['食物進入消化道','小分子被吸收','未吸收物隨糞便排出'].map((t,i)=>`<span data-digest-step="${i}">${t}</span>`).join('')}</div><p class="grazing-caption" data-caption aria-live="polite">跟著這一團草，觀察它在消化道內的去向。</p></div>`}
 
 let egestionPlaying=false,egestionRun=0;
-function egestionScene(){const seen=state.observed.egestionAnimation;return `<section class="card"><h2>02A　草原觀察：斑馬排便</h2><p>先看斑馬做了甚麼，再留意牠走開後，草地上留下甚麼。</p><div class="grazing-scene egestion-scene ${egestionPlaying?'egestion-playing':seen?'egestion-finished':''}"><svg viewBox="0 0 900 370" role="img" aria-label="卡通斑馬在草原停下排便，糞便落在草地上，斑馬走開後糞便仍留下"><rect width="900" height="370" fill="#f8ecd2"/><circle cx="786" cy="61" r="28" fill="#edc77c"/><path d="M0 230Q220 150 440 223T900 207V370H0Z" fill="#d5ddb0"/><path d="M0 285Q210 225 470 278T900 251V370H0Z" fill="#b7c78d"/><g fill="#739651" opacity=".8"><path d="M55 321q-20-25-16-40 18 17 16 40m0 0q2-31 13-38 1 26-13 38M813 297q-20-25-16-40 18 17 16 40m0 0q2-31 13-38 1 26-13 38"/></g><ellipse cx="296" cy="296" rx="45" ry="9" fill="#7e815b" opacity=".15"/><g class="egestion-zebra"><svg x="240" y="58" width="300" height="225">${ART.zebra}</svg></g><g class="dung-pellet pellet-one"><ellipse cx="294" cy="208" rx="13" ry="10" fill="#8e6745"/><path d="m288 206 7 4m-2-8 4 5" stroke="#b3ad70" stroke-width="2"/></g><g class="dung-pellet pellet-two"><ellipse cx="307" cy="205" rx="12" ry="10" fill="#9c744e"/><path d="m301 204 7 4m-1-8 3 5" stroke="#b3ad70" stroke-width="2"/></g><g class="dung-pellet pellet-three"><ellipse cx="281" cy="207" rx="12" ry="10" fill="#795b3f"/><path d="m276 204 5 6m-1-8 3 4" stroke="#b3ad70" stroke-width="2"/></g><g class="dung-callout"><rect x="44" y="35" width="340" height="54" rx="15" fill="#fffdf3"/><text x="214" y="69" text-anchor="middle" font-size="21" font-weight="bold" fill="#285c42">斑馬走開了，糞便仍留在草地上。</text><path d="M299 323v-17m-7 8 7-8 7 8" stroke="#285c42" stroke-width="3" fill="none"/><text x="300" y="351" text-anchor="middle" font-size="20" fill="#285c42">糞便中的有機物 → 仍儲存化學能</text></g></svg><p class="grazing-caption" aria-live="polite">${egestionPlaying?'觀察中：斑馬停下……糞便落到草地上……然後斑馬走開。':seen?'糞便仍留在草地上。當中的有機物和化學能並沒有消失。':'按播放，觀察斑馬排便及糞便的去向。'}</p></div><button class="secondary" data-egestion ${egestionPlaying?'disabled':''}>${seen?'↻ 重播草原排便動畫':'▶ 播放草原排便動畫'}</button>${skipControl('egestion')}<p class="tiny" style="margin-top:12px">接著往下看消化道動畫，找出糞便中的物質從哪裡來。排出未消化吸收物稱為「排遺」。</p></section>`}
-function playEgestion(){if(egestionPlaying)return;egestionPlaying=true;const run=++egestionRun;render();setTimeout(()=>{if(run!==egestionRun)return;egestionPlaying=false;if(state.page===2){state.observed.egestionAnimation=true;save();render()}},7200)}
-
-function stage2(){const watched=state.observed.g2Animation||teacher||done(2);return `${stageHeader('第二關','觀察消化與排遺')}<h1 id="main-title" tabindex="-1">吃進去，<br>就全部吸收了嗎？</h1><p class="lead">跟著食物進入消化道，看看哪些物質進入身體，哪些留在消化道內。</p>${predict(2,'吃下的食物，其化學能會全部被斑馬吸收嗎？')}${revealed(2)?`${egestionScene()}<div class="card"><h2>02B　食物進入、吸收與排出</h2>${digestionScene()}<button class="secondary" data-digest ${digestionFrame>=0&&digestionFrame<4?'disabled':''}>${watched?'↻ 再看一次動畫':'▶ 播放消化與排遺動畫'}</button>${skipControl('digestion')}<p class="tiny" style="margin-top:12px">這是物質去向示意，不表示消化道的實際形狀。未被消化吸收的部分才隨糞便排出。</p>${watched?`<h2 style="margin-top:24px">03　用觀察解釋</h2>${select('g2Observation','哪些物質隨糞便排出？',[['all','全部吃下的食物'],['undigested','未被消化吸收的物質，包括未被分解的纖維素等'],['none','糞便完全沒有有機物']])}${select('g2Where','糞便中的有機物所儲存的能量…',[['gone','消失了'],['heat','已全部變成熱'],['organic','仍儲存在有機物中']])}${checks('g2Evidence',[['organic','動畫中未被消化吸收的有機物，沿消化道進入糞便，仍含化學能'],['warm','糞便溫暖，所以其中能量全部變成熱']],'radio')}<details><summary>纖維素一定完全不能被分解嗎？</summary><p>斑馬本身沒有分解纖維素的酶，但腸道微生物可幫助分解部分纖維素。未被分解的纖維素等物質，仍可隨糞便排出。</p><a href="https://www.calacademy.org/educators/lesson-plans/ruminating-on-the-digestive-system" target="_blank" rel="noopener">科學參考：California Academy of Sciences</a></details><button data-action="check2">用觀察確認想法</button>`:'<p class="tiny">看完動畫後，再用你看到的證據回答。</p>'}${feedbackHTML()}</div>`:''}${done(2)?'<div class="feedback success"><strong>排遺：</strong>未消化吸收的物質隨糞便排出。糞便包含未被分解的纖維素等有機物，仍儲存化學能；這些能量沒有消失。</div>':''}${navigation(2)}`}
-function playDigestion(){if(digestionFrame>=0&&digestionFrame<4)return;const run=++digestionRun;digestionFrame=0;feedback=null;render();function tick(){if(run!==digestionRun)return;if(state.page!==2){digestionFrame=-1;return}digestionFrame++;if(digestionFrame===4){state.observed.g2Animation=true;state.observed.g2=true;save()}render();if(digestionFrame<4)setTimeout(tick,3000)}setTimeout(tick,3000)}
+function egestionScene(){const seen=state.observed.egestionAnimation;return `<section class="card"><h2>02A　草原觀察：斑馬排便</h2><p>先看斑馬做了甚麼，再留意牠走開後，草地上留下甚麼。</p><div class="grazing-scene egestion-scene ${egestionPlaying?'egestion-playing':seen?'egestion-finished':''}"><svg viewBox="0 0 900 370" role="img" aria-label="卡通斑馬在草原停下排便，糞便落在草地上，斑馬走開後糞便仍留下"><rect width="900" height="370" fill="#f8ecd2"/><circle cx="786" cy="61" r="28" fill="#edc77c"/><path d="M0 230Q220 150 440 223T900 207V370H0Z" fill="#d5ddb0"/><path d="M0 285Q210 225 470 278T900 251V370H0Z" fill="#b7c78d"/><g fill="#739651" opacity=".8"><path d="M55 321q-20-25-16-40 18 17 16 40m0 0q2-31 13-38 1 26-13 38M813 297q-20-25-16-40 18 17 16 40m0 0q2-31 13-38 1 26-13 38"/></g><ellipse cx="296" cy="296" rx="45" ry="9" fill="#7e815b" opacity=".15"/><g class="egestion-zebra"><svg x="240" y="58" width="300" height="225">${ART.zebra}</svg></g><g class="dung-pellet pellet-one"><ellipse cx="294" cy="208" rx="13" ry="10" fill="#8e6745"/><path d="m288 206 7 4m-2-8 4 5" stroke="#b3ad70" stroke-width="2"/></g><g class="dung-pellet pellet-two"><ellipse cx="307" cy="205" rx="12" ry="10" fill="#9c744e"/><path d="m301 204 7 4m-1-8 3 5" stroke="#b3ad70" stroke-width="2"/></g><g class="dung-pellet pellet-three"><ellipse cx="281" cy="207" rx="12" ry="10" fill="#795b3f"/><path d="m276 204 5 6m-1-8 3 4" stroke="#b3ad70" stroke-width="2"/></g><g class="dung-callout"><rect x="44" y="35" width="340" height="54" rx="15" fill="#fffdf3"/><text x="214" y="69" text-anchor="middle" font-size="21" font-weight="bold" fill="#285c42">斑馬走開了，糞便仍留在草地上。</text><path d="M299 323v-17m-7 8 7-8 7 8" stroke="#285c42" stroke-width="3" fill="none"/><text x="300" y="351" text-anchor="middle" font-size="20" fill="#285c42">糞便中的有機物 → 仍儲存化學能</text></g></svg><p class="grazing-caption" aria-live="polite">${egestionPlaying?'觀察中：斑馬停下……糞便落到草地上……然後斑馬走開。':seen?'糞便仍留在草地上。當中的有機物和化學能並沒有消失。':'按播放，觀察斑馬排便及糞便的去向。'}</p></div>${animationControls('egestion')}<details class="diagram-note"><summary>圖示說明</summary><p>接著往下看消化道動畫，找出糞便中的物質從哪裡來。排出未被消化吸收的物質稱為「排遺」。</p></details></section>`}
+function playEgestion(){player.start("egestion")}
+function stage2(){const watched=state.observed.g2Animation||done(2);return `${stageHeader('第二關','觀察消化與排遺')}<h1 id="main-title" tabindex="-1">吃進去，<br>就全部吸收了嗎？</h1><p class="lead">跟著食物進入消化道，觀察哪些物質穿過腸壁被吸收，哪些會隨糞便排出。</p>${predict(2,'斑馬吃下食物後，食物中的物質會全部被吸收嗎？')}${revealed(2)?`${egestionScene()}<div class="card"><h2>02B　食物進入、吸收與排出</h2>${digestionScene()}${animationControls('digestion')}<details class="diagram-note"><summary>圖示說明</summary><p>這是物質去向示意，不表示消化道的實際形狀。未被消化吸收的食物殘渣會成為糞便的一部分，再排出體外。</p></details>${watched?`<h2 style="margin-top:24px">03　根據動畫，作出解釋</h2>${select('g2Observation','哪些物質隨糞便排出？',[['all','全部吃下的食物'],['undigested','未被消化吸收的物質，例如未被分解的纖維素'],['none','糞便完全沒有有機物']])}${select('g2Where','糞便中有機物所儲存的化學能…',[['gone','消失了'],['heat','已全部變成熱'],['organic','仍儲存在有機物中']])}<fieldset class="answer-question"><legend class="label">哪一項解釋正確？</legend>${checks('g2Evidence',[['organic','未被消化吸收的有機物會隨糞便排出體外，其中仍儲存化學能。'],['warm','糞便溫暖，所以其中能量全部變成熱']],'radio')}</fieldset><details><summary>纖維素一定完全不能被分解嗎？</summary><p>斑馬本身沒有分解纖維素的酶，但腸道微生物可幫助分解部分纖維素。未被分解的纖維素等物質，仍可隨糞便排出。</p><a href="https://www.calacademy.org/educators/lesson-plans/ruminating-on-the-digestive-system" target="_blank" rel="noopener">科學參考：California Academy of Sciences</a></details>`:'<p class="tiny">看完動畫後，再結合動畫內容與所學概念作答。</p>'}${feedbackHTML()}</div>`:''}${done(2)?'<div class="feedback success"><strong>排遺：</strong>未被消化吸收的物質隨糞便排出。糞便包含未被分解的纖維素等有機物，仍儲存化學能；這些能量沒有消失。</div>':''}${navigation(2)}`}
+function playDigestion(){player.start("digestion")}
 let metabolicPlaying='',metabolicRun=0;
-function metabolicScene(kind){const urine=kind==='urine',key=urine?'urineAnimation':'respirationAnimation',seen=state.observed[key],playing=metabolicPlaying===kind,cls=playing?'metabolic-playing':seen?'metabolic-finished':'';return `<section class="card"><h2>${urine?'02　排泄觀察：尿液與尿素':'01　呼吸作用：二氧化碳與熱'}</h2><p>${urine?'看斑馬排尿，再看看尿液的放大示意圖中有甚麼。':'看斑馬走動，再觀察二氧化碳和熱的去向：釋放的能量用在哪裡？'}</p><div class="grazing-scene metabolic-scene ${cls}"><svg viewBox="0 0 900 440" role="img" aria-label="${urine?'斑馬排尿，放大示意尿素溶於尿液並隨尿液排出':'斑馬身體細胞進行呼吸作用，二氧化碳經肺呼出，熱由身體散到環境'}"><rect width="900" height="440" fill="#f8edd8"/><circle cx="810" cy="54" r="25" fill="#edca80"/><path d="M0 280Q180 220 400 275T900 252V440H0Z" fill="#d1ddab"/><g class="${urine?'resting-zebra':'walking-zebra'}"><svg x="100" y="80" width="355" height="266">${urine?ART.zebra:ART.zebra.replace('<path d="m66 138','<path class="walk-legs" d="m66 138')}</svg></g>${urine?`<g class="urine-flow"><path d="M213 267Q210 299 190 333" stroke="#d9b64d" stroke-width="5" stroke-dasharray="8 7" fill="none"/><ellipse cx="187" cy="344" rx="38" ry="8" fill="#d9b64d" opacity=".6"/></g><g class="metabolic-detail"><path d="M220 337 540 210" stroke="#7c9566" stroke-width="2" stroke-dasharray="6 5"/><circle cx="650" cy="210" r="108" fill="#fff9de" stroke="#c9b26a" stroke-width="3"/><path d="M551 220Q600 200 650 220T748 220V250a108 108 0 0 1-197 0Z" fill="#efdd9e" opacity=".7"/>${[[-45,-25],[20,-45],[40,25],[-35,45]].map(([x,y])=>`<g><rect x="${620+x}" y="${194+y}" width="60" height="26" rx="13" fill="#e3bd62"/><text x="${650+x}" y="${213+y}" text-anchor="middle" font-size="17" fill="#634f29">尿素</text></g>`).join('')}<text x="650" y="348" text-anchor="middle" font-size="21" font-weight="bold" fill="#285c42">放大示意：尿素溶於尿液</text><text x="650" y="377" text-anchor="middle" font-size="18" fill="#285c42">代謝廢物(尿素)隨尿液排出體外</text></g>`:`<g class="cell-label"><rect x="27" y="22" width="610" height="48" rx="14" fill="#fffdf3"/><text x="332" y="53" text-anchor="middle" font-size="20" fill="#285c42">呼吸作用：葡萄糖＋氧氣→二氧化碳＋水＋能量</text></g><g class="co2-cloud"><path d="M405 155Q480 110 522 118" stroke="#6394a2" stroke-width="3" fill="none"/><circle cx="570" cy="125" r="43" fill="#e5eff0" stroke="#7d9da4" stroke-width="2"/><text x="570" y="133" text-anchor="middle" font-size="22" fill="#355f6d">CO₂</text></g><g class="heat-waves" stroke="#d68146" stroke-width="5" fill="none" stroke-linecap="round"><path d="M240 230q-22-15 0-30t0-30"/><path d="M285 220q-22-15 0-30t0-30"/><path d="M330 235q-22-15 0-30t0-30"/></g><g class="metabolic-detail"><text x="665" y="192" text-anchor="middle" font-size="21" font-weight="bold" fill="#355f6d">二氧化碳：物質去向</text><text x="665" y="222" text-anchor="middle" font-size="18" fill="#355f6d">由細胞產生，經血液運到肺後呼出</text><text x="665" y="279" text-anchor="middle" font-size="21" font-weight="bold" fill="#a45c29">能量去向：活動與散熱</text><text x="665" y="311" text-anchor="middle" font-size="18" fill="#285c42">部分能量支持斑馬的身體活動</text><text x="665" y="341" text-anchor="middle" font-size="18" fill="#a45c29">大部分能量以熱的形式散到環境</text></g><g class="activity-label"><rect x="70" y="359" width="360" height="43" rx="14" fill="#fffdf3"/><text x="250" y="387" text-anchor="middle" font-size="19" fill="#285c42">走動、肌肉收縮，都需要能量</text></g>`}</svg><p class="grazing-caption" aria-live="polite">${playing?'觀察動畫中的物質與去向……':seen?(urine?'尿素是有機代謝廢物，隨尿液排出；其中仍有化學能。':'呼吸作用釋放的能量，部分支持身體活動，大部分以熱散出；活動使用的能量最終也會轉化為熱。'):'按播放，開始觀察。'}</p></div><button class="secondary" data-metabolic="${kind}" ${metabolicPlaying?'disabled':''}>${seen?'↻ 重播':'▶ 播放'}${urine?'排尿與尿素動畫':'呼吸作用動畫'}</button>${skipControl(kind)}<p class="tiny" style="margin-top:12px">${urine?'尿素以標記作放大示意，肉眼看不見這些標記。此處追蹤有機廢物的化學能，不是水本身的化學能。':'二氧化碳是無色氣體，氣體標記與熱波紋均為示意。活動所用的能量最終也會轉化為熱，不能與最終散熱重複相加；圖示不表示固定比例。熱不只經呼氣散出。'}</p></section>`}
-function playMetabolic(kind){if(metabolicPlaying)return;metabolicPlaying=kind;const run=++metabolicRun;render();setTimeout(()=>{if(run!==metabolicRun)return;metabolicPlaying='';if(state.page===(kind==='urine'?3:4)){state.observed[kind==='urine'?'urineAnimation':'respirationAnimation']=true;state.observed[kind==='urine'?'excretion':'activity']=true;save();render()}},7200)}
-function stage3(){const watched=state.observed.urineAnimation||teacher||done(3);return `${stageHeader('第三關','排泄：尿液與尿素')}<h1 id="main-title" tabindex="-1">尿液排出時，<br>帶走了甚麼？</h1><p class="lead">追蹤斑馬排出的尿液，看看當中是否有代謝廢物。</p>${predict(3,'被吸收的化學能，會全部儲存在新增斑馬組織中嗎？')}${revealed(3)?`${metabolicScene('urine')}<section class="card"><h2>03　根據排尿動畫作答</h2>${watched?`${select('g3Urine','斑馬排尿時，甚麼隨尿液排出？',[['water','只有水，沒有任何有機廢物'],['urea','尿素等代謝廢物'],['feces','未消化的草，即糞便']])}${select('urineEnergy','尿素等有機代謝廢物中的化學能…',[['organic','隨尿液排出，本輪未傳給下一營養級'],['gone','憑空消失了'],['heat','已全部變成熱']])}<button data-action="check3">用觀察確認想法</button>`:'<p>觀看或跳過排尿與尿素動畫後，再用觀察作答。</p>'}${feedbackHTML()}</section>`:''}${navigation(3)}`}
-function respirationPage(){const watched=state.observed.respirationAnimation||teacher||done(4);return `${stageHeader('第四關','呼吸作用與熱')}<h1 id="main-title" tabindex="-1">斑馬活動時，<br>能量去了哪裡？</h1><p class="lead">觀察斑馬走動、呼出二氧化碳，以及熱散到環境的過程。</p>${metabolicScene('respiration')}<section class="card"><h2>02　根據呼吸作用動畫作答</h2>${watched?`${select('g3Respiration','二氧化碳與熱的去向，哪個正確？',[['co2','大量剩餘化學能儲存在二氧化碳中被呼出'],['separate','二氧化碳經肺呼出；熱由身體散到環境'],['same','二氧化碳就是熱，兩者相同']])}${select('respirationEnergy','呼吸作用釋放的能量，怎樣被利用或轉化？',[['allbody','全部儲存為新增身體組織'],['activityHeat','部分支持身體活動，大部分以熱散出；活動所用能量最終也成為熱'],['gone','支持活動後就消失，沒有其他去向']])}<button data-action="checkRespiration">用觀察確認想法</button>`:'<p>觀看或跳過呼吸作用動畫後，再用觀察作答。</p>'}${feedbackHTML()}</section>${navigation(4)}`}
+function metabolicScene(kind){const urine=kind==='urine',key=urine?'urineAnimation':'respirationAnimation',seen=state.observed[key],playing=metabolicPlaying===kind,cls=playing?'metabolic-playing':seen?'metabolic-finished':'';return `<section class="card"><h2>${urine?'02　排泄觀察：尿液與尿素':'01　呼吸作用：二氧化碳與熱'}</h2><p>${urine?'看斑馬排尿，再看看尿液的放大示意圖中有甚麼。':'觀察斑馬走動，再留意圖中二氧化碳與熱的去向，想想呼吸作用釋放的能量有何用途。'}</p><div class="grazing-scene metabolic-scene ${cls}"><svg viewBox="0 0 900 440" role="img" aria-label="${urine?'斑馬排尿，放大示意尿素溶於尿液並隨尿液排出':'斑馬身體細胞進行呼吸作用，二氧化碳經肺呼出，熱由身體散到環境'}"><rect width="900" height="440" fill="#f8edd8"/><circle cx="810" cy="54" r="25" fill="#edca80"/><path d="M0 280Q180 220 400 275T900 252V440H0Z" fill="#d1ddab"/><g class="${urine?'resting-zebra':'walking-zebra'}"><svg x="100" y="80" width="355" height="266">${urine?ART.zebra:ART.zebra.replace('<path d="m66 138','<path class="walk-legs" d="m66 138')}</svg></g>${urine?`<g class="urine-flow"><path d="M213 267Q210 299 190 333" stroke="#d9b64d" stroke-width="5" stroke-dasharray="8 7" fill="none"/><ellipse cx="187" cy="344" rx="38" ry="8" fill="#d9b64d" opacity=".6"/></g><g class="metabolic-detail"><path d="M220 337 540 210" stroke="#7c9566" stroke-width="2" stroke-dasharray="6 5"/><circle cx="650" cy="210" r="108" fill="#fff9de" stroke="#c9b26a" stroke-width="3"/><path d="M551 220Q600 200 650 220T748 220V250a108 108 0 0 1-197 0Z" fill="#efdd9e" opacity=".7"/>${[[-45,-25],[20,-45],[40,25],[-35,45]].map(([x,y])=>`<g><rect x="${620+x}" y="${194+y}" width="60" height="26" rx="13" fill="#e3bd62"/><text x="${650+x}" y="${213+y}" text-anchor="middle" font-size="17" fill="#634f29">尿素</text></g>`).join('')}<text x="650" y="348" text-anchor="middle" font-size="21" font-weight="bold" fill="#285c42">放大示意：尿素溶於尿液</text><text x="650" y="377" text-anchor="middle" font-size="18" fill="#285c42">代謝廢物(尿素)隨尿液排出體外</text></g>`:`<g class="cell-label"><rect x="27" y="22" width="610" height="48" rx="14" fill="#fffdf3"/><text x="332" y="53" text-anchor="middle" font-size="20" fill="#285c42">呼吸作用：葡萄糖＋氧氣→二氧化碳＋水＋能量</text></g><g class="co2-cloud"><path d="M405 155Q480 110 522 118" stroke="#6394a2" stroke-width="3" fill="none"/><circle cx="570" cy="125" r="43" fill="#e5eff0" stroke="#7d9da4" stroke-width="2"/><text x="570" y="133" text-anchor="middle" font-size="22" fill="#355f6d">CO₂</text></g><g class="heat-waves" stroke="#d68146" stroke-width="5" fill="none" stroke-linecap="round"><path d="M240 230q-22-15 0-30t0-30"/><path d="M285 220q-22-15 0-30t0-30"/><path d="M330 235q-22-15 0-30t0-30"/></g><g class="metabolic-detail"><text x="665" y="192" text-anchor="middle" font-size="21" font-weight="bold" fill="#355f6d">二氧化碳：物質去向</text><text x="665" y="222" text-anchor="middle" font-size="18" fill="#355f6d">由細胞產生，經血液運到肺後呼出</text><text x="665" y="279" text-anchor="middle" font-size="21" font-weight="bold" fill="#a45c29">能量去向：活動與散熱</text><text x="665" y="311" text-anchor="middle" font-size="18" fill="#285c42">部分釋放的能量支持身體活動</text><text x="665" y="341" text-anchor="middle" font-size="18" fill="#a45c29">大部分釋放的能量以熱散到環境</text></g><g class="activity-label"><rect x="70" y="359" width="360" height="43" rx="14" fill="#fffdf3"/><text x="250" y="387" text-anchor="middle" font-size="19" fill="#285c42">走動、肌肉收縮，都需要能量</text></g>`}</svg><p class="grazing-caption" aria-live="polite">${playing?'留意動畫中物質和能量各自的去向……':seen?(urine?'尿素是有機代謝廢物，隨尿液排出；其中仍有化學能。':'呼吸作用釋放的能量，部分支持身體活動，大部分以熱散出；活動使用的能量最終也會轉化為熱。'):'按播放，開始觀察。'}</p></div>${animationControls(kind)}<details class="diagram-note"><summary>圖示說明</summary><p>${urine?'圖中的「尿素」標記用來代表溶於尿液的尿素，並非肉眼可見的形態。此處追蹤有機廢物的化學能，不是水本身的化學能。':'二氧化碳是無色氣體，氣體標記與熱波紋均為示意。活動所用的能量最終也會轉化為熱，不能與最終散熱重複相加；圖示不表示固定比例。熱不只經呼氣散出。'}</p></details></section>`}
+function playMetabolic(kind){player.start(kind)}
+function stage3(){const watched=state.observed.urineAnimation||done(3);return `${stageHeader('第三關','排泄：尿液與尿素')}<h1 id="main-title" tabindex="-1">尿液排出時，<br>帶走了甚麼？</h1><p class="lead">追蹤斑馬排出的尿液，看看當中是否有代謝廢物。</p>${predict(3,'斑馬吸收養分後，其中的化學能會全部儲存在新形成的身體組織中嗎？')}${revealed(3)?`${metabolicScene('urine')}<section class="card"><h2>03　觀察尿液，解釋能量去向</h2>${watched?`${select('g3Urine','斑馬排尿時，甚麼隨尿液排出？',[['water','只有水，沒有任何有機廢物'],['urea','尿素等代謝廢物'],['feces','未被消化吸收的食物殘渣']])}${select('urineEnergy','尿素等有機代謝廢物中的化學能…',[['organic','隨尿液中的有機代謝廢物離開身體，未沿這條食物鏈傳給下一個營養級'],['gone','憑空消失了'],['heat','已全部變成熱']])}`:'<p>觀看或跳過排尿與尿素動畫後，再用觀察作答。</p>'}${feedbackHTML()}</section>`:''}${navigation(3)}`}
+function respirationPage(){const watched=state.observed.respirationAnimation||done(4);return `${stageHeader('第四關','呼吸作用與熱')}<h1 id="main-title" tabindex="-1">斑馬活動時，<br>能量去了哪裡？</h1><p class="lead">觀察斑馬走動、呼出二氧化碳，以及熱散到環境的過程。</p>${metabolicScene('respiration')}<section class="card"><h2>02　解釋物質與能量的去向</h2>${watched?`${select('g3Respiration','二氧化碳與熱的去向，哪個正確？',[['co2','大量剩餘化學能儲存在二氧化碳中被呼出'],['separate','二氧化碳經肺呼出；熱由身體散到環境'],['same','二氧化碳就是熱，兩者相同']])}${select('respirationEnergy','呼吸作用釋放的能量，怎樣被利用或轉化？',[['allbody','全部儲存為新增身體組織'],['activityHeat','部分用來支持身體活動，大部分以熱的形式散到環境；活動所用的能量最終也會轉化為熱'],['gone','支持活動後就消失，沒有其他去向']])}`:'<p>觀看或跳過呼吸作用動畫後，再用觀察作答。</p>'}${feedbackHTML()}</section>${navigation(4)}`}
 let huntPlaying=false,huntRun=0;
-function huntScene(){const seen=state.observed.huntAnimation;return `<div class="grazing-scene hunt-scene ${huntPlaying?'hunt-playing':seen?'hunt-finished':''}"><svg viewBox="0 0 1000 430" role="img" aria-label="獅子追捕斑馬並進食，畫面有少量暗紅血跡；獅子離開後留下本輪未吃下的大骨及少量組織"><rect width="1000" height="430" fill="#f8edd8"/><circle cx="870" cy="65" r="30" fill="#ebca81"/><path d="M0 260Q240 180 490 240T1000 225V430H0Z" fill="#d3dcad"/><path d="M0 325Q230 245 500 302T1000 280V430H0Z" fill="#b8c68b"/><g class="hunt-zebra"><svg x="440" y="102" width="265" height="199">${ART.zebra}</svg></g><g class="hunt-remains"><ellipse cx="652" cy="329" rx="70" ry="10" fill="#6e7952" opacity=".15"/><ellipse cx="640" cy="320" rx="35" ry="6" fill="#924c40" opacity=".48"/><path d="M622 313q-8-19 9-23l21 14 27-6q17 7 0 18l-28-1-17 12q-14 0-12-14Z" fill="#a96b5b"/><g transform="translate(632 308) rotate(-17)"><path d="M-35-6q-14-16-20-3-9 12 7 17 5 14 16 2h64q12 15 19 1 16-7 5-19-7-12-18 2Z" fill="#f6ecd5" stroke="#a99571" stroke-width="2"/><path d="M-29 2h58" stroke="#cfbfa0" stroke-width="3"/></g><g transform="translate(674 328) rotate(24)"><path d="M-24-5q-10-11-15-2-6 9 5 12 4 10 12 1h45q9 10 14 0 11-4 3-12-5-9-13 1Z" fill="#f6ecd5" stroke="#a99571" stroke-width="2"/></g></g><g class="hunt-lion"><svg x="60" y="115" width="290" height="218">${ART.lion}</svg></g><g class="hunt-cover" fill="#6f8f50"><path d="M724 328q-54-77-38-118 42 49 38 118m0 0q-3-87 30-123 16 75-30 123m0 0q35-70 72-70-14 54-72 70Z"/><path d="M560 330q-38-50-31-77 35 29 31 77m0 0q9-57 31-72 4 47-31 72Z"/></g><g class="hunt-label"><rect x="120" y="26" width="720" height="49" rx="15" fill="#fffdf3"/><text x="480" y="58" text-anchor="middle" font-size="21" font-weight="bold" fill="#285c42">獅子吃下部分組織，仍留下本輪未吃下的大骨及少量組織。</text><path d="M650 365v-20m-7 8 7-8 7 8" stroke="#285c42" stroke-width="3" fill="none"/><text x="650" y="395" text-anchor="middle" font-size="20" fill="#285c42">未攝食的部分：仍有物質和化學能</text></g></svg><p class="grazing-caption" aria-live="polite">${huntPlaying?'觀察：獅子追捕斑馬 → 捕獲後進食 → 留下沒有吃下的部分。':seen?'捕獲獵物，不代表把整隻獵物全部吃下。留在草地上的部分仍有去向。':'按播放，留意獅子進食後，草地上留下甚麼。'}</p></div>`}
-function peer(){const watched=state.observed.huntAnimation||teacher||done(5);return `${stageHeader('捕食觀察','觀察後，與同伴交流')}<h1 id="main-title" tabindex="-1">捕獲了，<br>就把整隻斑馬吃下嗎？</h1><p class="lead">跟著獅子追捕、進食，再看看牠離開後，斑馬的哪些部分仍留在草原。</p><div class="card"><h2>01　草原上的一次捕食</h2><p class="tiny">卡通捕食畫面，包含少量暗紅血跡。</p>${huntScene()}<button class="secondary" data-hunt ${huntPlaying?'disabled':''}>${watched?'↻ 重播捕食動畫':'▶ 播放獅子捕食動畫'}</button>${skipControl('hunt')}<p class="tiny" style="margin-top:12px">這是一次攝食情境示意，不表示固定攝食比例。獅子也可吃下部分骨頭；本次畫面展示的是留在現場、未被吃下的大骨等部分。</p></div><div class="card"><h2>02　你從動畫發現了甚麼？</h2>${watched?`${select('huntLeft','1．獅子離開後，草地上留下了甚麼？',[['nothing','甚麼也沒有，整隻斑馬都被吃下'],['bones','本輪未吃下的大骨及少量身體組織'],['feces','這些都是獅子排出的糞便']])}${select('huntEnergy','2．沒有被吃下的部分，其中的化學能…',[['gone','全部消失了'],['organic','仍儲存在留下的有機物中，本輪未傳給獅子'],['heat','全部立即變成熱']])}${select('huntDifference','3．留下的骨頭，與糞便有甚麼不同？',[['same','完全相同，都是吃下後排出'],['uneaten','這些骨頭未被吃下；糞便則是吃下後，未消化吸收物的排遺'],['urine','留下的骨頭屬於尿液排泄物']])}${select('huntConclusion','4．這次觀察支持哪個結論？',[['all','捕獲斑馬，就能取得牠身體中的全部化學能'],['partial','只有被攝食部分的化學能，才有機會進入獅子體內'],['none','獅子進食也不會取得任何化學能']])}<details><summary>提示：留下的部分之後可能怎樣？</summary><p>其他動物可能再攝食，亦可進入分解者途徑。骨頭也含有機成分；化學能不是儲存在骨骼礦物質中。</p></details>${text('peerNote','與同伴討論後，我想補充…（選填）','例如：有機會傳遞，不代表一定全部被吃下。')}<button data-action="peer">用觀察確認想法</button>`:'<p>先觀看或跳過捕食動畫，再根據結尾畫面回答。</p>'}${feedbackHTML()}</div>${done(5)?'<div class="feedback success">獅子沒有吃下的部分，化學能仍有去向，並沒有消失。有機會被攝食，不等於必定全部被吃下。</div>':''}${navigation(5)}`}
-function playHunt(){if(huntPlaying)return;huntPlaying=true;const run=++huntRun;feedback=null;render();setTimeout(()=>{if(run!==huntRun)return;huntPlaying=false;if(state.page===5){state.observed.huntAnimation=true;save();render()}},9200)}
+function huntScene(){const seen=state.observed.huntAnimation;return `<div class="grazing-scene hunt-scene ${huntPlaying?'hunt-playing':seen?'hunt-finished':''}"><svg viewBox="0 0 1000 430" role="img" aria-label="獅子追捕斑馬並進食，畫面有少量暗紅血跡；獅子離開後留下本輪未吃下的大骨及少量組織"><rect width="1000" height="430" fill="#f8edd8"/><circle cx="870" cy="65" r="30" fill="#ebca81"/><path d="M0 260Q240 180 490 240T1000 225V430H0Z" fill="#d3dcad"/><path d="M0 325Q230 245 500 302T1000 280V430H0Z" fill="#b8c68b"/><g class="hunt-zebra"><svg x="440" y="102" width="265" height="199">${ART.zebra}</svg></g><g class="hunt-remains"><ellipse cx="652" cy="329" rx="70" ry="10" fill="#6e7952" opacity=".15"/><ellipse cx="640" cy="320" rx="35" ry="6" fill="#924c40" opacity=".48"/><path d="M622 313q-8-19 9-23l21 14 27-6q17 7 0 18l-28-1-17 12q-14 0-12-14Z" fill="#a96b5b"/><g transform="translate(632 308) rotate(-17)"><path d="M-35-6q-14-16-20-3-9 12 7 17 5 14 16 2h64q12 15 19 1 16-7 5-19-7-12-18 2Z" fill="#f6ecd5" stroke="#a99571" stroke-width="2"/><path d="M-29 2h58" stroke="#cfbfa0" stroke-width="3"/></g><g transform="translate(674 328) rotate(24)"><path d="M-24-5q-10-11-15-2-6 9 5 12 4 10 12 1h45q9 10 14 0 11-4 3-12-5-9-13 1Z" fill="#f6ecd5" stroke="#a99571" stroke-width="2"/></g></g><g class="hunt-lion"><svg x="60" y="115" width="290" height="218">${ART.lion}</svg></g><g class="hunt-cover" fill="#6f8f50"><path d="M724 328q-54-77-38-118 42 49 38 118m0 0q-3-87 30-123 16 75-30 123m0 0q35-70 72-70-14 54-72 70Z"/><path d="M560 330q-38-50-31-77 35 29 31 77m0 0q9-57 31-72 4 47-31 72Z"/></g><g class="hunt-label"><rect x="120" y="26" width="720" height="49" rx="15" fill="#fffdf3"/><text x="480" y="58" text-anchor="middle" font-size="21" font-weight="bold" fill="#285c42">獅子吃下部分組織，仍留下本輪未吃下的大骨及少量組織。</text><path d="M650 365v-20m-7 8 7-8 7 8" stroke="#285c42" stroke-width="3" fill="none"/><text x="650" y="395" text-anchor="middle" font-size="20" fill="#285c42">未被吃下的部分：有機物中仍儲存化學能</text></g></svg><p class="grazing-caption" aria-live="polite">${huntPlaying?'觀察：獅子追捕斑馬 → 捕獲後進食 → 留下沒有吃下的部分。':seen?'捕獲獵物，不代表把整隻獵物全部吃下。留在草地上的部分仍有去向。':'按播放，留意獅子進食後，草地上留下甚麼。'}</p></div>`}
+function peer(){const watched=state.observed.huntAnimation||done(5);return `${stageHeader('捕食觀察','觀察後，與同伴交流')}<h1 id="main-title" tabindex="-1">捕獲了，<br>就把整隻斑馬吃下嗎？</h1><p class="lead">跟著獅子追捕、進食，再看看牠離開後，斑馬的哪些部分仍留在草原。</p><div class="card"><h2>01　草原上的一次捕食</h2><p class="tiny">卡通捕食畫面，包含少量暗紅血跡。</p>${huntScene()}${animationControls('hunt')}<details class="diagram-note"><summary>圖示說明</summary><p>這是一次攝食情境示意，不表示固定攝食比例。獅子也可吃下部分骨頭；本次畫面展示的是留在現場、未被吃下的大骨等部分。</p></details></div><div class="card"><h2>02　觀察與解釋</h2>${watched?`${select('huntLeft','1．獅子離開後，草地上留下了甚麼？',[['nothing','甚麼也沒有，整隻斑馬都被吃下'],['bones','本輪未吃下的大骨及少量身體組織'],['feces','這些都是獅子排出的糞便']])}${select('huntEnergy','2．沒有被吃下的部分，其中的化學能…',[['gone','全部消失了'],['organic','仍儲存在留下的有機物中，這一輪未傳遞給獅子'],['heat','全部立即變成熱']])}${select('huntConclusion','3．這次觀察支持哪個結論？',[['all','捕獲斑馬，就能取得牠身體中的全部化學能'],['partial','只有被攝食部分的化學能，才有機會進入獅子體內'],['none','獅子進食也不會取得任何化學能']])}`:'<p>先觀看或跳過捕食動畫，再根據結尾畫面回答。</p>'}${feedbackHTML()}</div>${done(5)?'<div class="feedback success">獅子沒有吃下的部分，化學能仍有去向，並沒有消失。即使獵物被捕獲，也不代表牠的所有部分都會被吃下。</div>':''}${navigation(5)}`}
+function playHunt(){player.start("hunt")}
+function energyModel(){
+ const stages=[['草原上的草',100],['斑馬吃下的草',80],['斑馬吸收的養分',60],['排出尿素等廢物後',55],['新形成的斑馬組織',15],['獅子攝入的部分',8]];
+ let index=0;
+ for(let i=1;i<=5;i++){if(done(i))index=i;else break}
+ const parts=[];
+ if(index>=1)parts.push(['未被斑馬吃下的草',20]);
+ if(index>=2)parts.push(['隨糞便排出的有機物',20]);
+ if(index>=3)parts.push(['隨尿液排出的有機代謝廢物',5]);
+ if(index>=4)parts.push(['最終散出的熱',40]);
+ if(index>=5)parts.push(['本輪未被獅子吃下的斑馬組織',7]);
+ return {stages,index,remaining:stages[index][1],parts};
+}
+function energy(){const {stages,index,remaining,parts}=energyModel();return `<div class="energy-card energy-tracker" data-energy-remaining="${remaining}"><div class="energy-pie"><svg viewBox="0 0 200 200" role="img" aria-label="最初100單位中，目前追蹤到${stages[index][0]}的化學能為${remaining}單位"><circle cx="100" cy="100" r="80" fill="#547565"/><circle class="remaining-sector" cx="100" cy="100" r="40" fill="none" stroke="#f1c76a" stroke-width="80" pathLength="100" stroke-dasharray="${remaining} ${100-remaining}" transform="rotate(-90 100 100)"/></svg><span>每個完整圓都代表最初的100單位</span></div><div class="tracking-copy"><p class="eyebrow">從草原到獅子 · 能量逐步減少</p><h2>${stages[index][0]}</h2><div class="tracking-number"><strong>${remaining}</strong><span>／最初100單位</span></div><p class="tracking-message">${index===0?'這片草儲存的化學能，能全部傳給獅子嗎？':index===5?'最初100單位，這次只有8單位進入獅子體內。':'只有部分化學能繼續沿這條食物鏈傳遞。'}</p><div class="pie-key"><span><i class="gold"></i>目前追蹤的部分</span><span><i></i>已轉往其他去向</span></div></div><ol class="energy-journey" aria-label="已揭示的能量傳遞歷程">${stages.map(([label,n],i)=>`<li class="${i===index?'current':i<index?'passed':'pending'}"><span>${i<=index?label:i===5?'獅子':'繼續探索'}</span><strong>${i<=index?n:'？'}</strong>${i<5?'<b aria-hidden="true">→</b>':''}</li>`).join('')}</ol><details class="energy-explanation"><summary>減少的部分去了哪裡？</summary>${parts.length?`<ul>${parts.map(([name,n])=>`<li>${name}：${n}單位</li>`).join('')}</ul>`:'<p>完成各關後，這裡會逐步揭示其他去向。</p>'}<p>灰綠色部分代表已有其他去向的能量，並非能量消失。加上目前追蹤的部分，總量仍是100單位。</p></details><p class="energy-model-note">教學示例，並非固定比例。${index===5?'這裡假設15單位的斑馬組織中，獅子吃下8單位，留下7單位；8單位是攝入量，並非最後儲存在獅子新組織中的能量。':'每個階段追蹤的對象不同，隨探索逐步揭示。'}</p></div>`}
 
-function energy(){let parts=[],unknown=100;if(teacher||done(1)){parts.push(['grass','本輪未食草',20,'仍在草的有機物']);unknown=80}if(teacher||done(2)){parts.push(['feces','糞便有機物',20,'未消化吸收，排遺']);unknown=60}if(teacher||done(3)){parts.push(['urine','尿液有機廢物',5,'代謝廢物，排泄']);unknown=55}if(teacher||done(4)){parts.push(['heat','最終散出的熱',40,'散到環境'],['tissue','新增斑馬組織',15,'有機會被獅子攝食']);unknown=0}if(unknown)parts.push(['unknown','待追蹤',unknown,'先探索，才揭開去向']);return `<div class="energy-card"><p class="eyebrow">持續追蹤 · 同一批能量</p><div class="energy-big">100 <small>能量單位</small></div><div class="stack" role="img" aria-label="${parts.map(p=>p[1]+p[2]+'單位').join('，')}，合共100單位">${parts.map(p=>`<div style="width:${p[2]}%;background:var(--${p[0]})"></div>`).join('')}</div><div class="legend">${parts.map(p=>`<div class="legend-row"><span class="dot" style="background:var(--${p[0]})"></span><span>${p[1]}<small>${p[3]}</small></span><strong>${p[2]}</strong></div>`).join('')}</div><p class="energy-note">每一部分都有去向。圖中各部分始終合計100單位；完成探索後才顯示對應答案。</p></div><div class="note-card"><strong>一個模型，一段期間</strong>這些是同一批植物有機物的假設教學數據，並非固定的能量傳遞百分比。<details><summary>科學概念參考</summary><a href="https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems" target="_blank" rel="noopener">OpenStax：生態系能量流</a><br><a href="https://open.oregonstate.education/animalnutrition/chapter/bioenergetics/" target="_blank" rel="noopener">Oregon State：糞便、尿與能量</a><br><a href="https://openstax.org/books/biology-2e/pages/41-3-excretion-systems" target="_blank" rel="noopener">OpenStax：排泄系統</a></details></div>`}
-function render(){if(!unlocked(state.page))state.page=Math.min(...[0,...state.done.map(x=>x+1)].filter(x=>x<names.length));$('#teacher-banner').classList.toggle('hidden',!teacher);$('#teacher-toggle').textContent=teacher?'返回學生模式':'教師導覽';$('#progress').style.width=state.done.length/names.length*100+'%';$('#nav').innerHTML=names.map((n,i)=>`<button class="${state.page===i?'active ':''}${done(i)?'done':''}" data-go="${i}" ${unlocked(i)?'':'disabled'} ${state.page===i?'aria-current="step"':''}><span class="num">${done(i)?'✓':String(i+1).padStart(2,'0')}</span>${n}${unlocked(i)?'':' · 鎖定'}</button>`).join('');$('#content').innerHTML=([intro,stage1,stage2,stage3,respirationPage,peer][state.page])()+(teacher?`<aside class="reference"><h3>教師參考答案 · 投影前請留意</h3>${refs[state.page]}<p class="tiny" style="margin:10px 0 0">此模式可自由導覽，並非登入權限控管；切換回學生模式便會恢復原來的學生進度。</p></aside>`:'');$('#energy').innerHTML=energy();if(!teacher&&done(state.page)){document.querySelectorAll('#content input,#content textarea,#content select,#content [data-choice],#content [data-action]').forEach(e=>{if(e.dataset.action!=='print')e.disabled=true})}if(teacher){document.querySelectorAll('[data-download],[data-action=print]').forEach(e=>e.disabled=true)}document.querySelectorAll('[data-allocation]').forEach(e=>updateAllocation(e.dataset.allocation));save()}
+function render(){const oldFocus=document.activeElement?.dataset?.animate;if(!unlocked(state.page))state.page=Math.min(...[0,...state.done.map(x=>x+1)].filter(x=>x<names.length));$('#progress').style.width=state.done.length/names.length*100+'%';$('#nav').innerHTML=names.map((n,i)=>`<button class="${state.page===i?'active ':''}${done(i)?'done':''}" data-go="${i}" ${unlocked(i)?'':'disabled'} ${state.page===i?'aria-current="step"':''}><span class="num">${done(i)?'✓':String(i+1).padStart(2,'0')}</span>${n}${unlocked(i)?'':' · 鎖定'}</button>`).join('');$('#content').innerHTML=([intro,stage1,stage2,stage3,respirationPage,peer][state.page])();$('#energy').innerHTML=energy();if(done(state.page)){document.querySelectorAll('#content input,#content textarea,#content select,#content [data-choice],#content [data-action]').forEach(e=>{if(e.dataset.action!=='print')e.disabled=true})}document.querySelectorAll('[data-allocation]').forEach(e=>updateAllocation(e.dataset.allocation));enhancePage();restoreQuestionFeedback();player.bind();if(oldFocus)document.querySelector('[data-animate="'+oldFocus+'"]')?.focus({preventScroll:true});save()}
 function updateAllocation(prefix){const box=document.querySelector(`[data-allocation="${prefix}"]`);if(!box)return;const total=Number(box.dataset.total);let sum=0;box.querySelectorAll('[data-alloc]').forEach(i=>{const k=i.dataset.field,n=Number(val(k))||0;sum+=n;box.querySelector(`[data-range="${k}"]`).value=n;box.querySelector(`[data-bar="${k}"]`).style.width=Math.max(0,Math.min(100,n/total*100))+'%'});$('#total-'+prefix).textContent=`目前合計 ${sum} / ${total} 單位${sum===total?' ✓':''}`}
-function error(s){feedback={ok:false,text:s};render();$('.feedback[role=status]')?.scrollIntoView({block:'nearest',behavior:'smooth'})}
+function error(s,key){feedback={ok:false,text:s};errorField=key||null;render();const target=key?document.querySelector('.question-error'):null;(target||$('.feedback[role=status]'))?.scrollIntoView({block:'center',behavior:motionQuery.matches?'auto':'smooth'});target?.focus({preventScroll:true})}
+
 function numbers(keys,total,expected){if(keys.some(k=>val(k)===''||!Number.isInteger(Number(val(k)))||Number(val(k))<0||Number(val(k))>total))return '請為每個去向輸入0至'+total+'的整數。';const ns=keys.map(k=>Number(val(k)));if(ns.reduce((a,b)=>a+b,0)!==total)return `所有部分必須合計${total}單位。請再追蹤尚未分配或重複計算的能量。`;if(ns.some((n,i)=>n!==expected[i]))return '總數正確，但去向與觀察未吻合。再查看紀錄中的數字，將餘下的能量分給另一個去向。';return ''}
 const has=(k,v)=>Array.isArray(val(k))&&val(k).includes(v);
-function handle(action,stage){if(action==='print'){window.print();return}if(teacher){feedback={ok:true,text:'正在教師導覽；可閱讀頁底參考答案。返回學生模式後，原來的學習紀錄會保留。'};render();return}
-if(action==='intro'){if(!val('introChoice')||!String(val('introReason')).trim())return error('先選一個判斷，再選最接近你想法的理由。這裡不判對錯。');if(!state.predictions.intro)state.predictions.intro={choice:val('introChoice'),label:({all:'可以全部傳遞',some:'不可以',unsure:'未肯定'})[val('introChoice')],reason:val('introReason'),at:new Date().toISOString()};complete(0);go(1);return}
-if(action==='predict'){const i=Number(stage);if(!val('pred'+i)||!String(val('predReason'+i)).trim())return error('請先選擇預測及理由，才查看觀察。');if(!state.predictions[i])state.predictions[i]={choice:val('pred'+i),label:({all:'全部可以',some:'只有部分',unsure:'未肯定'})[val('pred'+i)],reason:val('predReason'+i),at:new Date().toISOString()};feedback=null;save();render();return}
+function handle(action,stage){if(action==='print'){window.print();return}
+if(action==='intro'){if(!val('introChoice')||!String(val('introReason')).trim())return error('先選一個判斷，再選最接近你想法的理由。這裡不判對錯。',!val('introChoice')?'introChoice':'introReason');if(!state.predictions.intro)state.predictions.intro={choice:val('introChoice'),label:({all:'可以全部傳遞',some:'不可以',unsure:'未肯定'})[val('introChoice')],reason:val('introReason'),at:new Date().toISOString()};complete(0);go(1);return}
+if(action==='predict'){const i=Number(stage);if(!val('pred'+i)||!String(val('predReason'+i)).trim())return error('請先選擇預測及理由，才查看觀察。',!val('pred'+i)?'pred'+i:'predReason'+i);if(!state.predictions[i])state.predictions[i]={choice:val('pred'+i),label:({all:'全部可以',some:'只有部分',unsure:'未肯定'})[val('pred'+i)],reason:val('predReason'+i),at:new Date().toISOString()};feedback=null;save();render();return}
 state.attempts[action]=(state.attempts[action]||0)+1;
-if(action==='check1'){if(!state.observed.g1Animation&&!done(1))return error('請先看完動畫，再根據觀察回答。');if(val('g1Observation')!=='some')return error('再看看斑馬走過後的草原：遠處是否仍有草留在原地？');if(val('g1Explain')!=='later')return error('留下的草還在，當中的化學能也仍有去向。這一輪未被吃下，不代表以後不能被攝食。');state.draft.grass='20';state.draft.eaten='80';complete(1);$('#keypoint-dialog').showModal()}
-if(action==='check2'){if(!state.observed.g2Animation&&!done(2))return error('請先看完動畫，再根據觀察回答。');if(val('g2Observation')!=='undigested')return error('沿著消化道追蹤：哪些物質沒有穿過腸壁，而是最後進入糞便？');if(val('g2Where')!=='organic')return error('糞便仍有未消化吸收的有機物，當中的化學能仍然存在，並非全部變成熱。');if(val('g2Evidence')!=='organic')return error('請選能支持糞便仍含化學能的觀察證據。');state.draft.feces='20';state.draft.absorbed='60';complete(2);$('#feces-keypoint-dialog').showModal()}
-if(action==='check3'){if(!state.observed.urineAnimation)return error('請先看完排尿與尿素動畫。');if(val('g3Urine')!=='urea')return error('尿液放大圖中有尿素等代謝廢物，與糞便不同。');if(val('urineEnergy')!=='organic')return error('尿素等有機廢物仍含化學能，隨尿液排出，不是能量消失。');state.draft.urine='5';complete(3);$('#urine-keypoint-dialog').showModal()}
-if(action==='checkRespiration'){if(!state.observed.respirationAnimation)return error('請先看完呼吸作用動畫。');if(val('g3Respiration')!=='separate')return error('二氧化碳是經肺呼出的物質；熱是由身體散出的能量。');if(val('respirationEnergy')!=='activityHeat')return error('部分能量支持活動，大部分以熱散出；活動所用能量最終亦成為熱，並不消失。');state.draft.heat='40';state.draft.tissue='15';complete(4);$('#respiration-keypoint-dialog').showModal()}
-if(action==='peer'){if(!state.observed.huntAnimation&&!done(5))return error('先看完捕食動畫，再根據觀察回答。');if(val('huntLeft')!=='bones')return error('再留意獅子離開後，草地上是否仍有大骨及少量組織。');if(val('huntEnergy')!=='organic')return error('留下的有機物仍儲存化學能，未被吃下不代表能量消失或全部變成熱。');if(val('huntDifference')!=='uneaten')return error('想想物質是否曾被吃進消化道：現場留下的部分和糞便有不同途徑。');if(val('huntConclusion')!=='partial')return error('捕獲不代表全部攝食。只有被吃下的部分才進入獅子體內。');complete(5)}
+if(action==='check1'){if(!state.observed.g1Animation&&!done(1))return error('請先看完動畫，再根據觀察回答。');if(val('g1Observation')!=='some')return error('再看看斑馬走過後的草原：遠處是否仍有草留在原地？','g1Observation');if(val('g1Explain')!=='later')return error('留下的草還在，當中的化學能也仍有去向。這一輪未被吃下，不代表以後不能被攝食。','g1Explain');state.draft.grass='20';state.draft.eaten='80';complete(1);$('#keypoint-dialog').showModal()}
+if(action==='check2'){if(!state.observed.g2Animation&&!done(2))return error('請先看完動畫，再根據觀察回答。');if(val('g2Observation')!=='undigested')return error('再沿消化道追蹤食物：哪些物質沒有被吸收，最後會隨糞便排出？','g2Observation');if(val('g2Where')!=='organic')return error('糞便仍有未被消化吸收的有機物，當中的化學能仍然存在，並非全部變成熱。','g2Where');if(val('g2Evidence')!=='organic')return error('請想想：未被消化吸收的有機物排出體外後，其中的化學能會消失嗎？','g2Evidence');state.draft.feces='20';state.draft.absorbed='60';complete(2);$('#feces-keypoint-dialog').showModal()}
+if(action==='check3'){if(!state.observed.urineAnimation)return error('請先看完排尿與尿素動畫。');if(val('g3Urine')!=='urea')return error('再看尿液的放大示意圖：尿素是代謝廢物，會隨尿液排出，與食物殘渣的排遺不同。','g3Urine');if(val('urineEnergy')!=='organic')return error('尿素等有機廢物仍含化學能，隨尿液排出，不是能量消失。','urineEnergy');state.draft.urine='5';complete(3);$('#urine-keypoint-dialog').showModal()}
+if(action==='checkRespiration'){if(!state.observed.respirationAnimation)return error('請先看完呼吸作用動畫。');if(val('g3Respiration')!=='separate')return error('二氧化碳是經肺呼出的物質；熱是由身體散出的能量。','g3Respiration');if(val('respirationEnergy')!=='activityHeat')return error('部分能量支持活動，大部分以熱散出；活動所用能量最終亦成為熱，並不消失。','respirationEnergy');state.draft.heat='40';state.draft.tissue='15';complete(4);$('#respiration-keypoint-dialog').showModal()}
+if(action==='peer'){if(!state.observed.huntAnimation&&!done(5))return error('先看完捕食動畫，再根據觀察回答。');if(val('huntLeft')!=='bones')return error('再留意獅子離開後，草地上是否仍有大骨及少量組織。','huntLeft');if(val('huntEnergy')!=='organic')return error('留下的有機物仍儲存化學能，未被吃下不代表能量消失或全部變成熱。','huntEnergy');if(val('huntConclusion')!=='partial')return error('捕獲不代表全部攝食。只有被吃下的部分才進入獅子體內。','huntConclusion');complete(5);$('#hunt-summary-dialog').showModal()}
 save()}
-const skipControl=kind=>`<button class="ghost animation-skip" data-skip-animation="${kind}" aria-label="跳過動畫，直接查看結果">跳過動畫</button>`;
-function skipAnimation(kind){
-const pages={grazing:1,egestion:2,digestion:2,urine:3,respiration:4,hunt:5};
-if(pages[kind]!==state.page)return;
-if(kind==='grazing'){grazingRun++;grazingFrame=8;state.observed.g1Animation=true;state.observed.g1=true}
-if(kind==='egestion'){egestionRun++;egestionPlaying=false;state.observed.egestionAnimation=true}
-if(kind==='digestion'){digestionRun++;digestionFrame=4;state.observed.g2Animation=true;state.observed.g2=true}
-if(kind==='urine'||kind==='respiration'){metabolicRun++;metabolicPlaying='';state.observed[kind==='urine'?'urineAnimation':'respirationAnimation']=true;state.observed[kind==='urine'?'excretion':'activity']=true}
-if(kind==='hunt'){huntRun++;huntPlaying=false;state.observed.huntAnimation=true}
-feedback=null;save();render();
+const motionQuery=window.matchMedia('(prefers-reduced-motion: reduce)');
+const sceneConfig={
+ grazing:{page:1,duration:10000,selector:'.smooth-grazing',key:'g1Animation',extra:'g1'},
+ egestion:{page:2,duration:7200,selector:'.egestion-scene',key:'egestionAnimation'},
+ digestion:{page:2,duration:12000,selector:'.simple-digestion',key:'g2Animation',extra:'g2'},
+ urine:{page:3,duration:7200,selector:'.metabolic-scene',key:'urineAnimation',extra:'excretion'},
+ respiration:{page:4,duration:7200,selector:'.metabolic-scene',key:'respirationAnimation',extra:'activity'},
+ hunt:{page:5,duration:9200,selector:'.hunt-scene',key:'huntAnimation'}
+};
+const animationControls=kind=>{const cfg=sceneConfig[kind],seen=!!state.observed[cfg.key],active=player.current?.kind===kind;return `<div class="animation-controls" data-controls="${kind}" role="group" aria-label="動畫操作"><div class="player-buttons"><button data-animate="${kind}" aria-label="${active?'暫停動畫':seen?'重播動畫':'播放動畫'}">${active?'Ⅱ 暫停':seen?'↻ 重播':'▶ 播放動畫'}</button><button class="ghost" data-skip-animation="${kind}">跳過動畫</button><button class="ghost player-restart" data-restart="${kind}" ${active?'':'hidden'} aria-label="從頭播放動畫">↻ 從頭播放</button><span class="player-status">${seen?'已看完 · 可重播':'按播放，開始觀察'}</span></div><div class="player-progress" role="progressbar" aria-label="動畫播放進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${seen?100:0}"><span style="transform:scaleX(${seen?1:0})"></span></div></div>`};
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const ease=x=>{x=clamp(x);return x*x*(3-2*x)};
+// Cache SVG references and path measurements once per mounted scene.
+const paintCache=new WeakMap();
+function paintScene(kind,node,p,playing){
+ if(!node)return;
+ let cache=paintCache.get(node);if(!cache){cache={one:new Map(),many:new Map(),opacity:new Map(),step:-1};paintCache.set(node,cache)}
+ const one=sel=>{if(!cache.one.has(sel))cache.one.set(sel,node.querySelector(sel));return cache.one.get(sel)};
+ const many=sel=>{if(!cache.many.has(sel))cache.many.set(sel,[...node.querySelectorAll(sel)]);return cache.many.get(sel)};
+ const opacity=(sel,v)=>{v=Math.round(clamp(v)*1000)/1000;if(cache.opacity.get(sel)===v)return;cache.opacity.set(sel,v);many(sel).forEach(el=>el.setAttribute('opacity',String(v)))};
+ const caption=s=>{const el=one('[data-caption]');if(el&&el.textContent!==I18N.text(s))el.textContent=s};
+ if(kind==='grazing'){
+  const move=ease(clamp((p-.03)/.88));
+  one('[data-grazer]').setAttribute('transform',`translate(${10+move*500} ${30+(playing?Math.sin(p*Math.PI*32)*1.6:0)})`);
+  one('[data-nibble]').setAttribute('transform',playing?`rotate(${(1-Math.cos(p*Math.PI*24))*3} 140 180)`:'');
+  const stride=playing?Math.sin(p*Math.PI*32)*5:0;
+  one('.zebra-leg-rear')?.setAttribute('transform',`rotate(${stride} 125 140)`);
+  one('.zebra-leg-front')?.setAttribute('transform',`rotate(${-stride} 125 140)`);
+  for(let i=0;i<14;i++){
+   const eaten=i<11?ease((p-(.07+i*.073))/.045):0;
+   opacity(`[data-tuft="${i}"]`,1-eaten);opacity(`[data-stubble="${i}"]`,eaten);
+  }
+  opacity('[data-graze-eating]',ease((p-.05)/.05));opacity('[data-graze-result]',ease((p-.9)/.07));
+  caption(p===0?'草原上有一片草。斑馬會把它們全部吃掉嗎？':p<.9?'斑馬一邊走，一邊吃草。留意牠走過後的草地。':'斑馬吃下了一部分草；仍有草留在原地，當中仍儲存化學能。');
+ }
+ if(kind==='digestion'){
+  const path=one('[data-digest-path]');
+  const length=cache.length??(cache.length=path.getTotalLength()),first=215;
+  let point,scale=1;
+  if(p<.28)point=path.getPointAtLength(first*ease(p/.28));
+  else if(p<.50){point=path.getPointAtLength(first);scale=1-.28*ease((p-.28)/.22)}
+  else if(p<.9){point=path.getPointAtLength(first+(length-first)*ease((p-.5)/.4));scale=.72}
+  else {const t=ease((p-.9)/.075);point={x:700+109*t,y:350+57*t};scale=.72}
+  one('[data-bolus]').setAttribute('transform',`translate(${point.x} ${point.y}) scale(${scale})`);
+  opacity('[data-bolus]',1-ease((p-.935)/.05));opacity('[data-feces]',ease((p-.935)/.05));
+  opacity('[data-absorption]',ease((p-.28)/.04));opacity('[data-egest-label]',ease((p-.8)/.05));
+  if(p>=.28&&(p<=.52||!cache.moleculesFinal))many('[data-molecule]').forEach((el,i)=>{
+   const t=ease((p-.3-i*.028)/.105),x=390+(i-1.5)*24*t,y=166-((i%2)?51:66)*t;
+   el.setAttribute('cx',x);el.setAttribute('cy',y);el.setAttribute('opacity',ease((p-.29-i*.028)/.025));
+  });
+  if(p>.52)cache.moleculesFinal=true;
+  const step=p<.28?0:p<.5?1:2;
+  if(cache.step!==step){cache.step=step;many('[data-digest-step]').forEach((el,i)=>{el.classList.toggle('current',i===step);el.classList.toggle('passed',i<step)})}
+  caption(p<.28?'一團草進入消化道，沿著消化道前進。':p<.5?'可吸收的小分子穿過腸壁，進入斑馬身體。':p<.92?'未被消化吸收的部分，繼續沿消化道前進。':'未被消化吸收的物質隨糞便排出；其中仍有有機物及化學能。');
+ }
+}
+const player={
+ current:null,raf:0,
+ flags(kind,on){grazingFrame=kind==='grazing'?(on?0:-1):grazingFrame;digestionFrame=kind==='digestion'?(on?0:-1):digestionFrame;egestionPlaying=kind==='egestion'?on:egestionPlaying;huntPlaying=kind==='hunt'?on:huntPlaying;if(kind==='urine'||kind==='respiration')metabolicPlaying=on?kind:''},
+ start(kind){
+  const cfg=sceneConfig[kind];if(!cfg||cfg.page!==state.page)return;
+  this.cancel();feedback=null;errorField=null;
+  if(motionQuery.matches){this.finish(kind);return}
+  this.flags(kind,true);this.current={kind,elapsed:0,last:0,paused:false,node:null,animations:[]};
+  render();this.schedule();
+ },
+ toggle(kind){if(this.current?.kind!==kind){this.start(kind);return}this.current.paused=!this.current.paused;this.current.last=0;this.syncNative();this.controls();if(!this.current.paused)this.schedule();else cancelAnimationFrame(this.raf)},
+ cancel(){cancelAnimationFrame(this.raf);if(this.current){this.current.animations.forEach(a=>a.pause());this.flags(this.current.kind,false)}this.current=null},
+ schedule(){cancelAnimationFrame(this.raf);this.raf=requestAnimationFrame(t=>this.tick(t))},
+ tick(t){const c=this.current;if(!c||c.paused)return;if(sceneConfig[c.kind].page!==state.page){this.cancel();return}if(c.last)c.elapsed+=Math.max(0,t-c.last);c.last=t;const cfg=sceneConfig[c.kind];this.paint();if(c.elapsed>=cfg.duration){this.finish(c.kind);return}this.schedule()},
+ bind(){
+  const c=this.current;
+  if(c){if(sceneConfig[c.kind].page!==state.page){this.cancel();return}const node=document.querySelector(sceneConfig[c.kind].selector);if(!node){this.cancel();return}if(node!==c.node){c.node=node;c.controlsNode=null;c.animations=node.getAnimations({subtree:true});this.syncNative()}this.paint()}
+  for(const kind of ['grazing','digestion'])if(c?.kind!==kind){const cfg=sceneConfig[kind];paintScene(kind,document.querySelector(cfg.selector),state.observed[cfg.key]?1:0,false)}
+ },
+ syncNative(){const c=this.current;if(!c)return;c.animations.forEach(a=>{a.pause();a.currentTime=c.elapsed;if(!c.paused)a.play()})},
+ paint(){const c=this.current;if(!c)return;const duration=sceneConfig[c.kind].duration,p=clamp(c.elapsed/duration);paintScene(c.kind,c.node,p,!c.paused);this.controls()},
+ controls(){const c=this.current;if(!c)return;let ui=c.controlsNode;if(!ui){const box=document.querySelector(`[data-controls="${c.kind}"]`);if(!box)return;ui=c.controlsNode={button:box.querySelector('[data-animate]'),restart:box.querySelector('[data-restart]'),meter:box.querySelector('[role="progressbar"]'),status:box.querySelector('.player-status')}}const cfg=sceneConfig[c.kind],p=clamp(c.elapsed/cfg.duration),label=c.paused?'▶ 繼續播放':'Ⅱ 暫停';if(ui.button.textContent!==I18N.text(label)){ui.button.textContent=label;ui.button.setAttribute('aria-label',c.paused?'繼續播放動畫':'暫停動畫')}if(ui.restart.hidden)ui.restart.hidden=false;const value=Math.round(p*100);if(ui.value!==value){ui.value=value;ui.meter.setAttribute('aria-valuenow',String(value))}ui.meter.firstElementChild.style.transform=`scaleX(${p})`;const msg=`${c.paused?'已暫停':'觀察中'} · ${Math.floor(c.elapsed/1000)} / ${Math.round(cfg.duration/1000)} 秒`;if(ui.status.textContent!==I18N.text(msg))ui.status.textContent=msg},
+ finish(kind){const cfg=sceneConfig[kind];this.cancel();this.flags(kind,false);if(kind==='grazing')grazingFrame=8;if(kind==='digestion')digestionFrame=4;state.observed[cfg.key]=true;if(cfg.extra)state.observed[cfg.extra]=true;feedback=null;save();render()},
+ pause(){if(this.current&&!this.current.paused)this.toggle(this.current.kind)}
+};
+function skipAnimation(kind){if(sceneConfig[kind]?.page!==state.page)return;player.finish(kind)}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)player.pause()});
+motionQuery.addEventListener('change',()=>{if(motionQuery.matches&&player.current)player.finish(player.current.kind)});
+function enhancePage(){
+ const progress=$('#lesson-progress');if(progress)progress.textContent=`已完成 ${state.done.length} / ${names.length}`;
+ document.querySelectorAll('#content [data-action]').forEach(el=>{if(done(state.page)){el.classList.add('confirmed');el.textContent='✓ 答案已確認'}});
+ if(errorField){
+  const field=document.querySelector('[data-field="'+errorField+'"]')||document.querySelector('[data-choice="'+errorField+'"]');
+  const group=field?.closest('fieldset')||field?.closest('.options');
+  if(group){group.classList.add('question-error');group.setAttribute('tabindex','-1');const id='question-hint';const p=document.createElement('p');p.className='field-error';p.id=id;p.textContent=feedback?.text||'請再留意這個問題。';group.appendChild(p);field.setAttribute('aria-describedby',id);group.querySelectorAll('input').forEach(x=>x.setAttribute('aria-invalid','true'))}
+ }
+ const active=document.querySelector('#nav [aria-current="step"]');if(active&&window.innerWidth<900)active.parentElement.scrollTo({left:Math.max(0,active.offsetLeft-16),behavior:'auto'});
 }
 
-let studentPage=state.page,teacherDraft=null,teacherObserved=null;
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.skipAnimation){skipAnimation(b.dataset.skipAnimation);return}if(b.hasAttribute('data-hunt')){playHunt();return}if(b.dataset.metabolic){playMetabolic(b.dataset.metabolic);return}if(b.hasAttribute('data-egestion')){playEgestion();return}if(b.hasAttribute('data-digest')){playDigestion();return}if(b.hasAttribute('data-graze')){playGrazing();return}if(b.dataset.go!==undefined){go(Number(b.dataset.go));return}if(b.dataset.choice){state.draft[b.dataset.choice]=b.dataset.value;save();render();return}if(b.dataset.observe){state.observed[b.dataset.observe]=true;save();render();return}if(b.dataset.action){handle(b.dataset.action,b.dataset.stage);return}});
-document.addEventListener('input',e=>{const t=e.target;if(t.dataset.field){const key=t.dataset.field;if(t.type==='checkbox'){state.draft[key]=[...document.querySelectorAll(`input[data-field="${key}"]:checked`)].map(x=>x.value)}else state.draft[key]=t.value;save();if(t.dataset.alloc)updateAllocation(t.dataset.alloc)}if(t.dataset.range){const key=t.dataset.range;state.draft[key]=t.value;const n=document.querySelector(`[data-field="${key}"]`);n.value=t.value;updateAllocation(n.dataset.alloc);save()}});
-$('#teacher-toggle').addEventListener('click',()=>{if(teacher){teacher=false;state.page=studentPage;state.draft=teacherDraft;state.observed=teacherObserved;teacherDraft=teacherObserved=null;feedback=null;render()}else $('#teacher-dialog').showModal()});
-$('#teacher-confirm').addEventListener('click',()=>{studentPage=state.page;teacherDraft=structuredClone(state.draft);teacherObserved=structuredClone(state.observed);teacher=true;$('#teacher-dialog').close();feedback=null;render()});
+
+const quizPages={
+ 1:{action:'check1',observed:'g1Animation',answers:{g1Observation:['some','再看看斑馬走過後的草地：是否還有草未被吃下？'],g1Explain:['later','未被吃下的草仍含有機物，其中的化學能並沒有消失。']}},
+ 2:{action:'check2',observed:'g2Animation',answers:{g2Observation:['undigested','只有未被消化吸收的食物殘渣會成為糞便的一部分，並非所有食物。'],g2Where:['organic','糞便中的有機物仍儲存化學能，並非消失或全部變成熱。'],g2Evidence:['organic','未被消化吸收的有機物會隨糞便排出，其中仍儲存化學能；糞便溫暖不代表能量全部變成熱。']}},
+ 3:{action:'check3',observed:'urineAnimation',answers:{g3Urine:['urea','尿素是代謝廢物，隨尿液排出；未被消化吸收的食物殘渣則隨糞便排出。'],urineEnergy:['organic','尿素等有機代謝廢物仍含化學能，隨尿液離開身體。']}},
+ 4:{action:'checkRespiration',observed:'respirationAnimation',answers:{g3Respiration:['separate','二氧化碳是經肺呼出的物質；熱是散到環境的能量，兩者不同。'],respirationEnergy:['activityHeat','呼吸作用釋放的能量，部分支持活動，大部分以熱散出；活動所用能量最終也轉化為熱。']}},
+ 5:{action:'peer',observed:'huntAnimation',answers:{huntLeft:['bones','留意獅子離開後，現場還有未被吃下的大骨及少量組織。'],huntEnergy:['organic','留下的有機物仍儲存化學能；未被吃下不代表能量消失。'],huntConclusion:['partial','捕獲不等於全部吃下，只有被攝食部分的化學能才有機會進入獅子體內。']}}
+};
+function showQuestionFeedback(key){
+ const rule=quizPages[state.page]?.answers[key];if(!rule||!val(key))return;
+ const field=document.querySelector('[data-field="'+key+'"]'),group=field?.closest('fieldset');if(!group)return;
+ const correct=val(key)===rule[0],id='instant-'+key;
+ let note=group.querySelector('.instant-feedback');
+ if(!note){note=document.createElement('p');note.className='instant-feedback';note.id=id;note.setAttribute('role','status');group.appendChild(note)}
+ note.textContent=correct?'✓ 答對了。':'✗ 這個答案不正確。'+rule[1];
+ note.classList.toggle('correct',correct);group.classList.toggle('instant-wrong',!correct);group.classList.toggle('instant-correct',correct);
+ group.querySelectorAll('input').forEach(el=>{el.setAttribute('aria-describedby',id);el.setAttribute('aria-invalid',String(!correct))});
+}
+function instantFeedback(key){
+ const quiz=quizPages[state.page];if(!quiz?.answers[key]||done(state.page))return;
+ showQuestionFeedback(key);
+ if(state.observed[quiz.observed]&&Object.entries(quiz.answers).every(([field,[answer]])=>val(field)===answer)){
+  player.pause();handle(quiz.action);
+ }
+}
+function restoreQuestionFeedback(){const quiz=quizPages[state.page];if(quiz)Object.keys(quiz.answers).forEach(showQuestionFeedback)}
+
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;if(b.dataset.animate){player.toggle(b.dataset.animate);return}if(b.dataset.restart){player.start(b.dataset.restart);return}if(b.dataset.skipAnimation){skipAnimation(b.dataset.skipAnimation);return}if(b.hasAttribute('data-hunt')){playHunt();return}if(b.dataset.metabolic){playMetabolic(b.dataset.metabolic);return}if(b.hasAttribute('data-egestion')){playEgestion();return}if(b.hasAttribute('data-digest')){playDigestion();return}if(b.hasAttribute('data-graze')){playGrazing();return}if(b.dataset.go!==undefined){go(Number(b.dataset.go));return}if(b.dataset.choice){state.draft[b.dataset.choice]=b.dataset.value;save();document.querySelectorAll('[data-choice="'+b.dataset.choice+'"]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));return}if(b.dataset.observe){state.observed[b.dataset.observe]=true;save();render();return}if(b.dataset.action){handle(b.dataset.action,b.dataset.stage);return}});
+document.addEventListener('input',e=>{const t=e.target;if(t.disabled)return;if(t.dataset.field){const key=t.dataset.field;if(t.type==='checkbox'){state.draft[key]=[...document.querySelectorAll(`input[data-field="${key}"]:checked`)].map(x=>x.value)}else state.draft[key]=t.value;save();if(t.dataset.alloc)updateAllocation(t.dataset.alloc);instantFeedback(key)}if(t.dataset.range){const key=t.dataset.range;state.draft[key]=t.value;const n=document.querySelector(`[data-field="${key}"]`);n.value=t.value;updateAllocation(n.dataset.alloc);save()}});
 $('#reset').addEventListener('click',()=>$('#reset-dialog').showModal());
-$('#reset-confirm').addEventListener('click',()=>{state=fresh();teacher=false;teacherDraft=teacherObserved=null;feedback=null;$('#reset-dialog').close();save();render()});
-document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('dialog').close()));
-// 教師導覽的輸入與頁面只在記憶體中展示，不覆蓋學生紀錄。
+$('#reset-confirm').addEventListener('click',()=>{player.cancel();state=fresh();feedback=null;$('#reset-dialog').close();save();render()});
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{const dialog=b.closest('dialog');dialog.close();if(dialog.classList.contains('keypoint-dialog'))document.querySelector('#content [data-go="'+(state.page+1)+'"]')?.focus({preventScroll:true})}));
 window.addEventListener('beforeunload',save);
 render();
 })();
